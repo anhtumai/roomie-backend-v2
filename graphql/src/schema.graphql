@@ -1,0 +1,14 @@
+enum MemberRole {
+  ADMIN
+  NORMAL
+  FREE
+}
+
+type Profile {
+  sub: String
+  username: String
+}
+
+type Query {
+  getMyProfile: Profile
+}
