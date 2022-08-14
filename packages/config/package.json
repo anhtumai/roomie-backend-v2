@@ -1,0 +1,8 @@
+{
+  "name": "@roomie-backend-v2/config",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.1"
+  }
+}

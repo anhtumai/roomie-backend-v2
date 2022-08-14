@@ -2,7 +2,7 @@ import "dotenv/config";
 import jwt from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 
-import config from "../config";
+import config from "@roomie-backend-v2/config";
 
 const client = jwksClient({
   jwksUri: `https://${config.AUTH0_DOMAIN}/.well-known/jwks.json`,

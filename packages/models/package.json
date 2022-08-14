@@ -1,0 +1,7 @@
+{
+  "name": "@roomie-backend-v2/models",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {}
+}
