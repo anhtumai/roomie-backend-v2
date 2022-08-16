@@ -1,0 +1,9 @@
+{
+  "name": "@roomie-backend-v2/user-creation-handler",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.9.1"
+  }
+}

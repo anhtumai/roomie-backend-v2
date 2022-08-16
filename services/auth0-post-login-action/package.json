@@ -1,0 +1,12 @@
+{
+  "name": "@roomie-backend-v2/auth0-post-login-action",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0"
+  }
+}
