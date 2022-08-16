@@ -1,5 +1,5 @@
 {
-  "name": "@roomie-backend-v2/user-creation-handler",
+  "name": "@roomie-backend-v2/post-login-handler",
   "version": "1.0.0",
   "license": "MIT",
   "devDependencies": {
