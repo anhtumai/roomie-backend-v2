@@ -12,9 +12,6 @@ async function getMyProfileResolver(
   info: any,
 ) {
   const jwtPayload = await validateToken(context.token);
-  if (typeof jwtPayload === "string") {
-    throw new Error("Invalid JWT Payload");
-  }
   const user = await UserModel.findById(jwtPayload.sub);
   if (user === null) {
     throw new Error(`User with id ${jwtPayload.sub} not found`);

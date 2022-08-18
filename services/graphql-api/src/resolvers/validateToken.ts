@@ -4,6 +4,21 @@ import jwksClient from "jwks-rsa";
 
 import config from "@roomie-backend-v2/config";
 
+type JwtPayload = {
+  nickname: string;
+  name: string;
+  picture: string;
+  updated_at: string;
+  email: string;
+  email_verified: boolean;
+  iss: string;
+  sub: string;
+  aud: string;
+  iat: number;
+  exp: number;
+  nonce: string;
+};
+
 const client = jwksClient({
   jwksUri: `https://${config.AUTH0_DOMAIN}/.well-known/jwks.json`,
 });
@@ -19,9 +34,7 @@ function getJwksClientKey(header: any, callback: any) {
   });
 }
 
-export async function validateToken(
-  token: string,
-): Promise<string | jwt.JwtPayload> {
+export async function validateToken(token: string): Promise<JwtPayload> {
   return new Promise((resolve, reject) => {
     jwt.verify(
       token,
@@ -35,9 +48,10 @@ export async function validateToken(
         if (error) {
           reject(error);
         }
-        if (decoded) {
-          resolve(decoded);
+        if (typeof decoded === "object") {
+          resolve(decoded as JwtPayload);
         }
+        reject(`Invalid Jwt Payload ${decoded}`);
       },
     );
   });
