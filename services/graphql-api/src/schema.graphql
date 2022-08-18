@@ -5,8 +5,9 @@ enum MemberRole {
 }
 
 type Profile {
-  sub: String
-  username: String
+  id: String!
+  username: String!
+  email: String!
 }
 
 type Query {
