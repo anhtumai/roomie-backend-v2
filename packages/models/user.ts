@@ -5,10 +5,12 @@ export interface UserDocument extends mongoose.Document {
 }
 
 const userSchema = new mongoose.Schema<UserDocument>({
+  _id: {
+    type: String,
+  },
   username: {
     type: String,
     minlength: 3,
-    unique: true,
     required: true,
   },
 });

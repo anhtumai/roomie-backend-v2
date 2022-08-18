@@ -1,5 +1,8 @@
 import http from "http";
 
+import UserModel from "@roomie-backend-v2/models/user";
+import { connectMongodb } from "@roomie-backend-v2/models/database";
+
 type LoginData = {
   user: {
     created_at: string;
@@ -12,16 +15,39 @@ type LoginData = {
   };
 };
 
+connectMongodb();
+
 const host = "localhost";
 const port = 8000;
 
 const server = http.createServer((req, res) => {
   if (req.method === "POST") {
-    req.on("data", (chunk: Buffer) => {
+    req.on("data", async (chunk: Buffer) => {
       const loginData: LoginData = JSON.parse(chunk.toString());
+      console.log(loginData);
       const { user_id, nickname } = loginData.user;
       console.log("User", user_id);
       console.log("Nickname", nickname);
+
+      try {
+        const newUser = new UserModel({
+          _id: user_id,
+          username: nickname,
+        });
+        await UserModel.findOneAndUpdate(
+          { _id: user_id },
+          {
+            $setOnInsert: {
+              _id: user_id,
+              username: nickname,
+            },
+          },
+          { upsert: true, new: true },
+        );
+      } catch (err) {
+        console.error("Problem when accessing mongodb");
+        console.error(err);
+      }
     });
   }
   res.end();
