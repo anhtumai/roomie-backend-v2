@@ -30,10 +30,6 @@ const server = http.createServer((req, res) => {
       console.log("Nickname", nickname);
 
       try {
-        const newUser = new UserModel({
-          _id: user_id,
-          username: nickname,
-        });
         await UserModel.findOneAndUpdate(
           { _id: user_id },
           {

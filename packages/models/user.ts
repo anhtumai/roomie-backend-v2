@@ -19,10 +19,12 @@ const userSchema = new mongoose.Schema<UserDocument>({
     type: String,
     enum: ["ADMIN", "NORMAL", "FREE"],
     default: "FREE",
+    required: false,
   },
   apartment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Apartment",
+    default: null,
     required: false,
   },
 });
