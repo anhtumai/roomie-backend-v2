@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 export interface UserDocument extends mongoose.Document {
   username: string;
+  role: string;
+  apartment?: mongoose.Schema.Types.ObjectId;
 }
 
 const userSchema = new mongoose.Schema<UserDocument>({
@@ -12,6 +14,16 @@ const userSchema = new mongoose.Schema<UserDocument>({
     type: String,
     minlength: 3,
     required: true,
+  },
+  role: {
+    type: String,
+    enum: ["ADMIN", "NORMAL", "FREE"],
+    default: "FREE",
+  },
+  apartment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Apartment",
+    required: false,
   },
 });
 
