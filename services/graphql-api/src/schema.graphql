@@ -4,12 +4,32 @@ enum MemberRole {
   FREE
 }
 
+type Task {
+  id: String!
+  description: String!
+  frequency: Int!
+}
+
+type Apartment {
+  id: String!
+  name: String!
+  #tasks: Task[]
+}
+
 type Profile {
   id: String!
   username: String!
   email: String!
+  role: MemberRole!
+  apartmentId: String
+  apartment: Apartment
 }
 
 type Query {
   getMyProfile: Profile
+}
+
+type Mutation {
+  updateMyProfile(username: String): Profile
+  createApartment: Apartment
 }

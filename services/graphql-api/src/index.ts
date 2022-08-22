@@ -4,9 +4,11 @@ import path from "path";
 import { ApolloServer } from "apollo-server";
 
 import Query from "./resolvers/Query";
+import Mutation from "./resolvers/Mutation";
 
 const resolvers = {
   Query,
+  Mutation,
 };
 
 const server = new ApolloServer({
