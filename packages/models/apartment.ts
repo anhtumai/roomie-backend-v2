@@ -67,7 +67,7 @@ apartmentSchema.set("toJSON", {
 });
 
 const ApartmentModel = mongoose.model<ApartmentDocument>(
-  "User",
+  "Apartment",
   apartmentSchema,
 );
 

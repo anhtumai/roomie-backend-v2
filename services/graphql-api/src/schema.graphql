@@ -30,6 +30,6 @@ type Query {
 }
 
 type Mutation {
-  updateMyProfile(username: String): Profile
-  createApartment: Apartment
+  updateMyProfile(username: String!): Profile
+  createApartment(name: String): Apartment
 }

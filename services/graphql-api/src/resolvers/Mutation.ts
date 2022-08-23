@@ -1,17 +1,21 @@
+import mongoose from "mongoose";
+
 import { validateToken } from "./validateToken";
 
 import { connectMongodb } from "@roomie-backend-v2/models/database";
 import UserModel from "@roomie-backend-v2/models/user";
+import ApartmentModel from "@roomie-backend-v2/models/apartment";
 
 connectMongodb();
 
 async function updateMyProfileResolver(
   parent: any,
-  args: any,
+  args: {
+    username: string;
+  },
   context: any,
   info: any,
 ) {
-  console.log("Args", args);
   const jwtPayload = await validateToken(context.token);
   const user = await UserModel.findOneAndUpdate(
     {
@@ -25,7 +29,6 @@ async function updateMyProfileResolver(
   if (user === null) {
     throw new Error(`User with id ${jwtPayload.sub} not found`);
   }
-  console.log("User after update", user);
   return {
     id: user.id,
     email: jwtPayload.email,
@@ -33,4 +36,37 @@ async function updateMyProfileResolver(
   };
 }
 
-export default { updateMyProfile: updateMyProfileResolver };
+async function createApartmentResolver(
+  parent: any,
+  args: {
+    name: string;
+  },
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+  const user = await UserModel.findById(jwtPayload.sub);
+  if (user === null) {
+    throw new Error(`User with id ${jwtPayload.sub} not found`);
+  }
+  if (user.apartment !== undefined && user.apartment !== null) {
+    throw new Error(`You already have an apartment`);
+  }
+
+  const apartment = await ApartmentModel.create({
+    _id: new mongoose.Types.ObjectId(),
+    name: args.name,
+  });
+  await UserModel.findOneAndUpdate(
+    {
+      _id: jwtPayload.sub,
+    },
+    { apartment: apartment._id, role: "ADMIN" },
+  );
+  return apartment;
+}
+
+export default {
+  updateMyProfile: updateMyProfileResolver,
+  createApartment: createApartmentResolver,
+};
