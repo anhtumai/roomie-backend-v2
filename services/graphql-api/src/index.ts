@@ -6,6 +6,8 @@ import { ApolloServer } from "apollo-server";
 import Query from "./resolvers/Query";
 import Mutation from "./resolvers/Mutation";
 
+connectMongodb();
+
 const resolvers = {
   Query,
   Mutation,

@@ -3,8 +3,6 @@ import { validateToken } from "./validateToken";
 import { connectMongodb } from "@roomie-backend-v2/models/database";
 import UserModel from "@roomie-backend-v2/models/user";
 
-connectMongodb();
-
 async function getMyProfileResolver(
   parent: any,
   args: any,
