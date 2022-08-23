@@ -33,14 +33,6 @@ const taskSchema = new mongoose.Schema<TaskDocument>({
   },
 });
 
-taskSchema.set("toJSON", {
-  transform: (document: any, returnedObject: TaskDocument) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
-});
-
 export interface ApartmentDocument extends mongoose.Document {
   name: string;
   tasks: TaskDocument[];
@@ -56,14 +48,6 @@ const apartmentSchema = new mongoose.Schema<ApartmentDocument>({
     required: true,
   },
   tasks: [taskSchema],
-});
-
-apartmentSchema.set("toJSON", {
-  transform: (document: any, returnedObject: ApartmentDocument) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
 });
 
 const ApartmentModel = mongoose.model<ApartmentDocument>(

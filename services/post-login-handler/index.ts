@@ -24,10 +24,8 @@ const server = http.createServer((req, res) => {
   if (req.method === "POST") {
     req.on("data", async (chunk: Buffer) => {
       const loginData: LoginData = JSON.parse(chunk.toString());
-      console.log(loginData);
+      console.log("Login Data", loginData);
       const { user_id, nickname } = loginData.user;
-      console.log("User", user_id);
-      console.log("Nickname", nickname);
 
       try {
         await UserModel.findOneAndUpdate(

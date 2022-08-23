@@ -7,12 +7,14 @@ import { connectMongodb } from "@roomie-backend-v2/models/database";
 
 import Query from "./resolvers/Query";
 import Mutation from "./resolvers/Mutation";
+import Profile from "./resolvers/Profile";
 
 connectMongodb();
 
 const resolvers = {
   Query,
   Mutation,
+  Profile,
 };
 
 const server = new ApolloServer({

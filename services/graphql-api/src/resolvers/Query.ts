@@ -18,7 +18,7 @@ async function getMyProfileResolver(
     email: jwtPayload.email,
     username: user.username,
     role: user.role,
-    apartmentId: user.apartment,
+    apartmentId: user.apartment?.toString(),
   };
 }
 
