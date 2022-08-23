@@ -1,6 +1,5 @@
 import { validateToken } from "./validateToken";
 
-import { connectMongodb } from "@roomie-backend-v2/models/database";
 import UserModel from "@roomie-backend-v2/models/user";
 
 async function getMyProfileResolver(
@@ -18,6 +17,8 @@ async function getMyProfileResolver(
     id: user.id,
     email: jwtPayload.email,
     username: user.username,
+    role: user.role,
+    apartmentId: user.apartment,
   };
 }
 
