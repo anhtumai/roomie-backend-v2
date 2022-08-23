@@ -3,6 +3,8 @@ import path from "path";
 
 import { ApolloServer } from "apollo-server";
 
+import { connectMongodb } from "@roomie-backend-v2/models/database";
+
 import Query from "./resolvers/Query";
 import Mutation from "./resolvers/Mutation";
 
