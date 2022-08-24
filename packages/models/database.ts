@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import config from "@roomie-backend-v2/config";
+import config from "config";
 
 export function connectMongodb() {
   mongoose

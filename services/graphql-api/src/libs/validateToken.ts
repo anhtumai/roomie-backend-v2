@@ -2,7 +2,7 @@ import "dotenv/config";
 import jwt from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 
-import config from "@roomie-backend-v2/config";
+import config from "config";
 
 type JwtPayload = {
   nickname: string;

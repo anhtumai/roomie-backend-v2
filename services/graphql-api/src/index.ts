@@ -3,7 +3,7 @@ import path from "path";
 
 import { ApolloServer } from "apollo-server";
 
-import { connectMongodb } from "@roomie-backend-v2/models/database";
+import { connectMongodb } from "models/database";
 
 import {
   getMyProfileResolver,

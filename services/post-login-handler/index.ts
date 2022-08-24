@@ -1,7 +1,7 @@
 import http from "http";
 
-import UserModel from "@roomie-backend-v2/models/user";
-import { connectMongodb } from "@roomie-backend-v2/models/database";
+import UserModel from "models/user";
+import { connectMongodb } from "models/database";
 
 type LoginData = {
   user: {

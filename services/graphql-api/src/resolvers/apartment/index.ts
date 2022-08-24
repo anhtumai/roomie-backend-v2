@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-import { validateToken } from "@roomie-backend-v2/graphql-api/src/libs/validateToken";
+import { validateToken } from "graphqlApi/libs/validateToken";
 
-import UserModel from "@roomie-backend-v2/models/user";
-import ApartmentModel from "@roomie-backend-v2/models/apartment";
+import UserModel from "models/user";
+import ApartmentModel from "models/apartment";
 
 export async function getApartmentFromProfileResolver(
   parent: {

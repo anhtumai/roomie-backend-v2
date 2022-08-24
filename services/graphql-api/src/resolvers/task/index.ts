@@ -1,6 +1,6 @@
-import { validateToken } from "@roomie-backend-v2/graphql-api/src/libs/validateToken";
+import { validateToken } from "graphqlApi/libs/validateToken";
 
-import UserModel from "@roomie-backend-v2/models/user";
+import UserModel from "models/user";
 
 export async function createTaskResolver(
   parent: any,
