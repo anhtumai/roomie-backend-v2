@@ -29,7 +29,7 @@ type Profile {
 type Query {
   getMyProfile: Profile
   getMyApartment: Apartment
-  checkUsernameAvailable: Boolean!
+  checkUsernameAvailable(username: String!): Boolean!
 }
 
 type Mutation {

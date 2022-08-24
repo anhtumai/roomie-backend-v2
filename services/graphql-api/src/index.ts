@@ -8,6 +8,7 @@ import { connectMongodb } from "@roomie-backend-v2/models/database";
 import {
   getMyProfileResolver,
   updateMyProfileResolver,
+  checkUsernameAvailableResolver,
 } from "./resolvers/profile";
 import {
   getApartmentFromProfileResolver,
@@ -19,6 +20,7 @@ connectMongodb();
 const resolvers = {
   Query: {
     getMyProfile: getMyProfileResolver,
+    checkUsernameAvailable: checkUsernameAvailableResolver,
   },
   Mutation: {
     updateMyProfile: updateMyProfileResolver,
