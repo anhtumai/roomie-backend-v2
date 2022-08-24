@@ -5,16 +5,28 @@ import { ApolloServer } from "apollo-server";
 
 import { connectMongodb } from "@roomie-backend-v2/models/database";
 
-import Query from "./resolvers/Query";
-import Mutation from "./resolvers/Mutation";
-import Profile from "./resolvers/Profile";
+import {
+  getMyProfileResolver,
+  updateMyProfileResolver,
+} from "./resolvers/profile";
+import {
+  getApartmentFromProfileResolver,
+  createApartmentResolver,
+} from "./resolvers/apartment";
 
 connectMongodb();
 
 const resolvers = {
-  Query,
-  Mutation,
-  Profile,
+  Query: {
+    getMyProfile: getMyProfileResolver,
+  },
+  Mutation: {
+    updateMyProfile: updateMyProfileResolver,
+    createApartment: createApartmentResolver,
+  },
+  Profile: {
+    apartment: getApartmentFromProfileResolver,
+  },
 };
 
 const server = new ApolloServer({

@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema<UserDocument>({
   username: {
     type: String,
     minlength: 3,
+    unique: true,
     required: true,
   },
   role: {

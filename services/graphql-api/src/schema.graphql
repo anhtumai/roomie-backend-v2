@@ -6,6 +6,7 @@ enum MemberRole {
 
 type Task {
   id: String!
+  name: String!
   description: String!
   frequency: Int!
 }
@@ -28,9 +29,15 @@ type Profile {
 type Query {
   getMyProfile: Profile
   getMyApartment: Apartment
+  checkUsernameAvailable: Boolean!
 }
 
 type Mutation {
   updateMyProfile(username: String!): Profile
   createApartment(name: String): Apartment
+  #createTask(
+  #name: String!
+  #description: String!
+  #frequency: Int!
+  #): Task
 }

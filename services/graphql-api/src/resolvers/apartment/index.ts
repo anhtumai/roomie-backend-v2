@@ -1,39 +1,39 @@
 import mongoose from "mongoose";
 
-import { validateToken } from "./validateToken";
+import { validateToken } from "@roomie-backend-v2/graphql-api/src/libs/validateToken";
 
 import UserModel from "@roomie-backend-v2/models/user";
 import ApartmentModel from "@roomie-backend-v2/models/apartment";
 
-async function updateMyProfileResolver(
-  parent: any,
-  args: {
+export async function getApartmentFromProfileResolver(
+  parent: {
+    id: string;
+    email: string;
     username: string;
+    role: string;
+    apartmentId?: string;
   },
+  args: any,
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
-  const user = await UserModel.findOneAndUpdate(
-    {
-      _id: jwtPayload.sub,
-    },
-    {
-      username: args.username,
-    },
-    { new: true },
-  );
-  if (user === null) {
-    throw new Error(`User with id ${jwtPayload.sub} not found`);
+  const { apartmentId } = parent;
+
+  if (apartmentId === undefined || apartmentId === null) {
+    return null;
   }
+  const apartment = await ApartmentModel.findById(apartmentId);
+  if (apartment === null) {
+    return null;
+  }
+
   return {
-    id: user.id,
-    email: jwtPayload.email,
-    username: user.username,
+    id: apartment._id,
+    name: apartment.name,
   };
 }
 
-async function createApartmentResolver(
+export async function createApartmentResolver(
   parent: any,
   args: {
     name: string;
@@ -62,8 +62,3 @@ async function createApartmentResolver(
   );
   return apartment;
 }
-
-export default {
-  updateMyProfile: updateMyProfileResolver,
-  createApartment: createApartmentResolver,
-};
