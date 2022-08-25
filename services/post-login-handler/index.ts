@@ -12,6 +12,13 @@ type LoginData = {
     nickname: string;
     updated_at: string;
     user_id: string;
+    identities: {
+      connection: string;
+      isSocial: string;
+      provider: string;
+      userId: string;
+      user_id: string;
+    }[];
   };
 };
 
@@ -20,12 +27,30 @@ connectMongodb();
 const host = "localhost";
 const port = 8000;
 
+function getUsernameSuffix(connection: string) {
+  if (connection.includes("Username") && connection.includes("Password")) {
+    return "1";
+  }
+  if (connection.includes("google")) {
+    return "2";
+  }
+  if (connection.includes("windows")) {
+    return "3";
+  }
+  return "4";
+}
+
 const server = http.createServer((req, res) => {
   if (req.method === "POST") {
     req.on("data", async (chunk: Buffer) => {
       const loginData: LoginData = JSON.parse(chunk.toString());
-      console.log("Login Data", loginData);
-      const { user_id, nickname } = loginData.user;
+      console.log("Login Data");
+      console.log(JSON.stringify(loginData, null, 4));
+      const { user_id, email, identities } = loginData.user;
+
+      const username = `${email}_${getUsernameSuffix(
+        identities[0].connection,
+      )}`;
 
       try {
         await UserModel.findOneAndUpdate(
@@ -33,7 +58,7 @@ const server = http.createServer((req, res) => {
           {
             $setOnInsert: {
               _id: user_id,
-              username: nickname,
+              username,
             },
           },
           { upsert: true, new: true },
