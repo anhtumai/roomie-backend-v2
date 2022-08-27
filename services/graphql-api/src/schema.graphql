@@ -46,13 +46,17 @@ type Query {
 
 type Mutation {
   updateMyProfile(username: String!): Profile
+
   createApartment(name: String): Apartment
+
   invite(username: String!): Invitation
   rejectInvitation(id: ID!): Invitation
   acceptInvitation(id: ID!): Invitation
-  #createTask(
-  #name: String!
-  #description: String!
-  #frequency: Int!
-  #): Task
+
+  createTask(
+    name: String!
+    description: String!
+    frequency: Int!
+    assignees: [String]
+  ): Task
 }

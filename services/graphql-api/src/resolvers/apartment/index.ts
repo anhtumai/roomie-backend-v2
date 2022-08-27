@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
-
-import { validateToken } from "graphqlApi/libs/validateToken";
+import { validateToken, findAndValidateUser } from "graphqlApi/libs/validation";
 
 import UserModel from "models/user";
 import ApartmentModel from "models/apartment";
@@ -42,10 +40,8 @@ export async function createApartmentResolver(
   info: any,
 ) {
   const jwtPayload = await validateToken(context.token);
-  const user = await UserModel.findById(jwtPayload.sub);
-  if (user === null) {
-    throw new Error(`User with id ${jwtPayload.sub} not found`);
-  }
+  const user = await findAndValidateUser(jwtPayload.sub);
+
   if (user.apartment !== undefined && user.apartment !== null) {
     throw new Error(`You already have an apartment`);
   }

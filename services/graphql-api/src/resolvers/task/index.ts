@@ -1,6 +1,4 @@
-import { validateToken } from "graphqlApi/libs/validateToken";
-
-import UserModel from "models/user";
+import { validateToken, findAndValidateUser } from "graphqlApi/libs/validation";
 
 export async function createTaskResolver(
   parent: any,
@@ -14,10 +12,7 @@ export async function createTaskResolver(
 ) {
   console.log("Parent", parent);
   const jwtPayload = await validateToken(context.token);
-  const user = await UserModel.findById(jwtPayload.sub);
-  if (user === null) {
-    throw new Error(`User with id ${jwtPayload.sub} not found`);
-  }
+  const user = await findAndValidateUser(jwtPayload.sub);
   if (user.apartment !== undefined && user.apartment !== null) {
     throw new Error(`You already have an apartment`);
   }
