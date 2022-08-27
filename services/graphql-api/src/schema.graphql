@@ -40,15 +40,16 @@ type Invitation {
 
 type Query {
   getMyProfile: Profile
+  getMyInvitations: [Invitation]
   checkUsernameAvailable(username: String!): Boolean!
 }
 
 type Mutation {
   updateMyProfile(username: String!): Profile
   createApartment(name: String): Apartment
-  invite(username: String!): Invitation 
+  invite(username: String!): Invitation
   rejectInvitation(id: ID!): Invitation
-  acceptInvitation(id: ID!): Invitation 
+  acceptInvitation(id: ID!): Invitation
   #createTask(
   #name: String!
   #description: String!

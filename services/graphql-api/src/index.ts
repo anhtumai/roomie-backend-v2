@@ -15,6 +15,7 @@ import {
   createApartmentResolver,
 } from "./resolvers/apartment";
 import {
+  getMyInvitationsResolver,
   inviteResolver,
   rejectInvitationResolver,
   acceptInvitationResolver,
@@ -25,6 +26,7 @@ connectMongodb();
 const resolvers = {
   Query: {
     getMyProfile: getMyProfileResolver,
+    getMyInvitations: getMyInvitationsResolver,
     checkUsernameAvailable: checkUsernameAvailableResolver,
   },
   Mutation: {

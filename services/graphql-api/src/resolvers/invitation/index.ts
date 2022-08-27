@@ -28,7 +28,7 @@ async function findAndValidateInvitation(
   return invitation;
 }
 
-export async function getMyInvitations(
+export async function getMyInvitationsResolver(
   parent: any,
   args: any,
   context: any,
@@ -45,7 +45,9 @@ export async function getMyInvitations(
         await UserModel.findById(invitation.inviter),
         await ApartmentModel.findById(invitation.apartment),
       ]);
+      console.log("Invitation", invitation);
       return {
+        id: invitation._id.toString(),
         invitee: {
           id: invitee.id,
           username: invitee.username,
@@ -61,6 +63,7 @@ export async function getMyInvitations(
       };
     }),
   );
+  console.log(responseInvitations);
   return responseInvitations;
 }
 
