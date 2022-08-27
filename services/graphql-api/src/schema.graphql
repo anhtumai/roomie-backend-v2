@@ -26,10 +26,15 @@ type Profile {
   apartment: Apartment
 }
 
+type ShortProfile {
+  id: String!
+  username: String!
+}
+
 type Invitation {
   id: String!
-  invitee: Profile!
-  inviter: Profile!
+  invitee: ShortProfile!
+  inviter: ShortProfile!
   apartment: Apartment!
 }
 
@@ -43,7 +48,7 @@ type Mutation {
   createApartment(name: String): Apartment
   invite(username: String!): Invitation 
   rejectInvitation(id: ID!): Invitation
-  acceptInvitation(id: ID!): Apartment
+  acceptInvitation(id: ID!): Invitation 
   #createTask(
   #name: String!
   #description: String!
