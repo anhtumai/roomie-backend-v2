@@ -9,7 +9,6 @@ export interface TaskDocument extends mongoose.Document {
 }
 
 const taskSchema = new mongoose.Schema<TaskDocument>({
-  _id: String,
   name: {
     type: String,
     minlength: 5,
@@ -39,9 +38,6 @@ export interface ApartmentDocument extends mongoose.Document {
 }
 
 const apartmentSchema = new mongoose.Schema<ApartmentDocument>({
-  _id: {
-    type: String,
-  },
   name: {
     type: String,
     minlength: 10,

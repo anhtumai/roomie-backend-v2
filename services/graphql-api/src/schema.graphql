@@ -20,21 +20,28 @@ type Apartment {
 type Profile {
   id: String!
   username: String!
-  email: String!
+  email: String
   role: MemberRole!
   apartmentId: String
   apartment: Apartment
 }
 
+type Invitation {
+  id: String!
+  invitee: Profile!
+  inviter: Profile!
+  apartment: Apartment!
+}
+
 type Query {
   getMyProfile: Profile
-  getMyApartment: Apartment
   checkUsernameAvailable(username: String!): Boolean!
 }
 
 type Mutation {
   updateMyProfile(username: String!): Profile
   createApartment(name: String): Apartment
+  invite(username: String!): Invitation 
   #createTask(
   #name: String!
   #description: String!

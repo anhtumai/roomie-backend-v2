@@ -14,6 +14,7 @@ import {
   getApartmentFromProfileResolver,
   createApartmentResolver,
 } from "./resolvers/apartment";
+import { inviteResolver } from "./resolvers/invitation";
 
 connectMongodb();
 
@@ -25,6 +26,7 @@ const resolvers = {
   Mutation: {
     updateMyProfile: updateMyProfileResolver,
     createApartment: createApartmentResolver,
+    invite: inviteResolver,
   },
   Profile: {
     apartment: getApartmentFromProfileResolver,

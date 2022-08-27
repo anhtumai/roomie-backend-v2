@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 
 export interface UserDocument extends mongoose.Document {
+  _id: string;
   username: string;
-  role: string;
+  role: "ADMIN" | "NORMAL" | "FREE";
   apartment?: mongoose.Schema.Types.ObjectId;
 }
 

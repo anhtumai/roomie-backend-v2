@@ -51,7 +51,6 @@ export async function createApartmentResolver(
   }
 
   const apartment = await ApartmentModel.create({
-    _id: new mongoose.Types.ObjectId(),
     name: args.name,
   });
   await UserModel.findOneAndUpdate(
