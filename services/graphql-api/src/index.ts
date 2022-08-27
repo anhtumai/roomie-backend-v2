@@ -20,6 +20,7 @@ import {
   rejectInvitationResolver,
   acceptInvitationResolver,
 } from "./resolvers/invitation";
+import { createTaskResolver } from "./resolvers/task";
 
 connectMongodb();
 
@@ -32,9 +33,12 @@ const resolvers = {
   Mutation: {
     updateMyProfile: updateMyProfileResolver,
     createApartment: createApartmentResolver,
+
     invite: inviteResolver,
     rejectInvitation: rejectInvitationResolver,
     acceptInvitation: acceptInvitationResolver,
+
+    createTask: createTaskResolver,
   },
   Profile: {
     apartment: getApartmentFromProfileResolver,

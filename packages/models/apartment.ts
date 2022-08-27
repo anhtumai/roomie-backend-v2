@@ -22,7 +22,7 @@ const taskSchema = new mongoose.Schema<TaskDocument>({
   },
   assignees: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
     },
   ],
