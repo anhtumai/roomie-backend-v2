@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export interface InvitationDocument extends mongoose.Document {
-  inviter: mongoose.Schema.Types.ObjectId;
-  invitee: mongoose.Schema.Types.ObjectId;
+  inviter: string;
+  invitee: string;
   apartment: mongoose.Schema.Types.ObjectId;
 }
 

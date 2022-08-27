@@ -42,6 +42,8 @@ type Mutation {
   updateMyProfile(username: String!): Profile
   createApartment(name: String): Apartment
   invite(username: String!): Invitation 
+  rejectInvitation(id: ID!): Invitation
+  acceptInvitation(id: ID!): Apartment
   #createTask(
   #name: String!
   #description: String!

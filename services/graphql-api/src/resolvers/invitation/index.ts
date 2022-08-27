@@ -81,3 +81,104 @@ export async function inviteResolver(
     },
   };
 }
+
+export async function rejectInvitationResolver(
+  parent: any,
+  args: {
+    id: string;
+  },
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+
+  const invitationId = args.id;
+
+  const invitation = await InvitationModel.findById(invitationId);
+  if (invitation === null || invitation === undefined) {
+    throw new Error(`Invitation with id ${invitationId} not found`);
+  }
+  if (jwtPayload.sub !== invitation.invitee) {
+    throw new Error("This invitation is not for you to reject");
+  }
+
+  await InvitationModel.deleteOne({
+    _id: invitationId,
+  });
+
+  const [inviter, invitee, apartment] = await Promise.all([
+    await UserModel.findById(invitation.inviter),
+    await UserModel.findById(invitation.invitee),
+    await ApartmentModel.findById(invitation.apartment),
+  ]);
+  return {
+    id: invitationId,
+    inviter: {
+      id: inviter!._id,
+      username: inviter!.username,
+      email: jwtPayload.email,
+      role: inviter!.role,
+      apartmentId: inviter?.apartment?.toString(),
+    },
+    invitee: {
+      id: jwtPayload.sub,
+      username: invitee!.username,
+      email: jwtPayload.email,
+      role: invitee!.role,
+    },
+    apartment: {
+      id: invitation.apartment,
+      name: apartment?.name ?? "Apartment not found",
+    },
+  };
+}
+
+export async function acceptInvitationResolver(
+  parent: any,
+  args: {
+    id: string;
+  },
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+
+  const invitationId = args.id;
+
+  const invitation = await InvitationModel.findById(invitationId);
+  if (invitation === null || invitation === undefined) {
+    throw new Error(`Invitation with id ${invitationId} not found`);
+  }
+  if (jwtPayload.sub !== invitation.invitee) {
+    throw new Error("This invitation is not for you to accept");
+  }
+
+  const [inviter, invitee, apartment] = await Promise.all([
+    await UserModel.findById(invitation.inviter),
+    await UserModel.findById(invitation.invitee),
+    await ApartmentModel.findById(invitation.apartment),
+  ]);
+
+  if (invitee === null || invitee === undefined) {
+    throw new Error(`User with id ${invitation.invitee} not found`);
+  }
+  if (invitee.apartment !== null || invitee.role !== "FREE") {
+    throw new Error("You aleady have an apartment");
+  }
+
+  if (apartment === null || apartment === undefined) {
+    throw new Error("Cannot find apartment");
+  }
+
+  // Transaction
+  await UserModel.findByIdAndUpdate(invitee._id, {
+    apartment: apartment._id,
+    role: "NORMAL",
+  });
+  await InvitationModel.deleteOne({ _id: invitation._id });
+
+  return {
+    id: invitation.apartment,
+    name: apartment?.name ?? "Apartment not found",
+  };
+}

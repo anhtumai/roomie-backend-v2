@@ -14,7 +14,11 @@ import {
   getApartmentFromProfileResolver,
   createApartmentResolver,
 } from "./resolvers/apartment";
-import { inviteResolver } from "./resolvers/invitation";
+import {
+  inviteResolver,
+  rejectInvitationResolver,
+  acceptInvitationResolver,
+} from "./resolvers/invitation";
 
 connectMongodb();
 
@@ -27,6 +31,8 @@ const resolvers = {
     updateMyProfile: updateMyProfileResolver,
     createApartment: createApartmentResolver,
     invite: inviteResolver,
+    rejectInvitation: rejectInvitationResolver,
+    acceptInvitation: acceptInvitationResolver,
   },
   Profile: {
     apartment: getApartmentFromProfileResolver,
