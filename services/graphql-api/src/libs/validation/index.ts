@@ -18,3 +18,10 @@ export async function findAndValidateApartment(apartmentId: string) {
   }
   return apartment;
 }
+
+export function isValidDateString(dateString: any) {
+  if (typeof dateString !== "string") {
+    return false;
+  }
+  return String(new Date(dateString)) !== "Invalid Date";
+}

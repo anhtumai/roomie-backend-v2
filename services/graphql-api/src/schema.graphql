@@ -9,6 +9,9 @@ type Task {
   name: String!
   description: String!
   frequency: Int!
+  start: String!
+  end: String
+  assignees: [ShortProfile]
 }
 
 type Apartment {
@@ -57,6 +60,8 @@ type Mutation {
     name: String!
     description: String!
     frequency: Int!
+    start: String!
+    end: String
     assignees: [String]
   ): Task
 }

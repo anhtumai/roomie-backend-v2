@@ -4,8 +4,10 @@ export interface TaskDocument extends mongoose.Document {
   name: string;
   description: string;
   frequency: number;
-  assignees: mongoose.Schema.Types.ObjectId[];
-  createdBy: mongoose.Schema.Types.ObjectId;
+  start: Date;
+  end?: Date;
+  assignees: string[];
+  createdBy: string;
 }
 
 const taskSchema = new mongoose.Schema<TaskDocument>({
@@ -20,6 +22,20 @@ const taskSchema = new mongoose.Schema<TaskDocument>({
     default: "",
     required: true,
   },
+  frequency: {
+    type: Number,
+    min: 1,
+    required: true,
+  },
+  start: {
+    type: Date,
+    required: true,
+  },
+  end: {
+    type: Date,
+    default: null,
+    required: false,
+  },
   assignees: [
     {
       type: String,
@@ -27,7 +43,7 @@ const taskSchema = new mongoose.Schema<TaskDocument>({
     },
   ],
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: "User",
   },
 });

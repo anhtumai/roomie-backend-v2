@@ -1,4 +1,10 @@
-import { validateToken, findAndValidateUser } from "graphqlApi/libs/validation";
+import {
+  validateToken,
+  findAndValidateUser,
+  isValidDateString,
+} from "graphqlApi/libs/validation";
+
+import { startOfWeek, endOfWeek } from "date-fns";
 
 import UserModel from "models/user";
 import ApartmentModel from "models/apartment";
@@ -9,12 +15,24 @@ export async function createTaskResolver(
     name: string;
     description: string;
     frequency: number;
+    start: string;
+    end?: string | null;
     assignees: string[];
   },
   context: any,
   info: any,
 ) {
   const jwtPayload = await validateToken(context.token);
+
+  if (!isValidDateString(args.start)) {
+    throw new Error(
+      `Start: ${args.start} is invalid. It should be ISO string format.`,
+    );
+  }
+  if (args.assignees.length === 0) {
+    throw new Error("Task must have at least one assignee");
+  }
+
   const user = await findAndValidateUser(jwtPayload.sub);
   if (user.apartment === null || user.role !== "ADMIN") {
     throw new Error("You must be ADMIN to create new task");
@@ -39,6 +57,10 @@ export async function createTaskResolver(
     name: args.name,
     description: args.description,
     frequency: args.frequency,
+    start: startOfWeek(new Date(args.start)),
+    end: isValidDateString(args.end)
+      ? endOfWeek(new Date(args.end as string))
+      : null,
     assignees: assignees.map((assignee) => assignee._id),
   };
   const apartment = await ApartmentModel.findOneAndUpdate(
@@ -56,5 +78,11 @@ export async function createTaskResolver(
     name: newTask.name,
     description: newTask.description,
     frequency: newTask.frequency,
+    start: newTask.start.toISOString(),
+    end: newTask.end?.toISOString(),
+    assignees: assignees.map((assignee) => ({
+      id: assignee._id,
+      username: assignee.username,
+    })),
   };
 }
