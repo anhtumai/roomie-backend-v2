@@ -6,10 +6,11 @@ import {
   validateToken,
   findAndValidateUser,
   findAndValidateApartment,
+  validateAdminRole,
 } from "graphqlApi/libs/validation";
 
 function validateNotHavingApartment(invitee: UserDocument) {
-  if (invitee.apartment !== null || invitee.role !== "FREE") {
+  if (invitee.apartment !== null) {
     throw new Error(`User ${invitee.username} already has an apartment`);
   }
 }
@@ -63,7 +64,6 @@ export async function getMyInvitationsResolver(
       };
     }),
   );
-  console.log(responseInvitations);
   return responseInvitations;
 }
 
@@ -80,16 +80,12 @@ export async function inviteResolver(
   if (inviter.apartment === null || inviter.apartment === undefined) {
     throw new Error(`User ${inviter.username} does not have an apartment`);
   }
-  if (inviter.role !== "ADMIN") {
-    throw new Error(
-      `User ${inviter.username} does not have permission to invite other person`,
-    );
-  }
 
   const apartment = await ApartmentModel.findById(inviter.apartment);
   if (apartment === null || apartment === undefined) {
     throw new Error("Cannot find apartment");
   }
+  validateAdminRole(apartment, inviter);
 
   const invitee = await UserModel.findOne({ username: args.username });
   if (invitee === null) {
@@ -194,7 +190,14 @@ export async function acceptInvitationResolver(
   // Transaction
   await UserModel.findByIdAndUpdate(invitee._id, {
     apartment: apartment._id,
-    role: "NORMAL",
+  });
+  await ApartmentModel.findByIdAndUpdate(invitation.apartment, {
+    $push: {
+      members: {
+        userId: invitee._id,
+        role: "NORMAL",
+      },
+    },
   });
   await InvitationModel.deleteOne({ _id: invitation._id });
 

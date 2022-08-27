@@ -1,5 +1,5 @@
-import UserModel from "models/user";
-import ApartmentModel from "models/apartment";
+import UserModel, { UserDocument } from "models/user";
+import ApartmentModel, { ApartmentDocument } from "models/apartment";
 
 export { validateToken } from "./validateToken";
 
@@ -24,4 +24,16 @@ export function isValidDateString(dateString: any) {
     return false;
   }
   return String(new Date(dateString)) !== "Invalid Date";
+}
+
+export function validateAdminRole(
+  apartment: ApartmentDocument,
+  user: UserDocument,
+) {
+  const membership = apartment.members.find(
+    (member) => member.userId === user._id,
+  );
+  if (membership?.role !== "ADMIN") {
+    throw new Error(`User ${user.username} does not have ADMIN permission`);
+  }
 }

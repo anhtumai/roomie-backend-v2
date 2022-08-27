@@ -51,6 +51,10 @@ const taskSchema = new mongoose.Schema<TaskDocument>({
 export interface ApartmentDocument extends mongoose.Document {
   name: string;
   tasks: TaskDocument[];
+  members: {
+    userId: string;
+    role: "ADMIN" | "NORMAL";
+  }[];
 }
 
 const apartmentSchema = new mongoose.Schema<ApartmentDocument>({
@@ -60,6 +64,21 @@ const apartmentSchema = new mongoose.Schema<ApartmentDocument>({
     required: true,
   },
   tasks: [taskSchema],
+  members: [
+    {
+      userId: {
+        type: String,
+        ref: "User",
+        required: true,
+      },
+      role: {
+        type: String,
+        enum: ["ADMIN", "NORMAL"],
+        default: "NORMAL",
+        required: true,
+      },
+    },
+  ],
 });
 
 const ApartmentModel = mongoose.model<ApartmentDocument>(

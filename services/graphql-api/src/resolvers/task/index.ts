@@ -2,12 +2,40 @@ import {
   validateToken,
   findAndValidateUser,
   isValidDateString,
+  validateAdminRole,
 } from "graphqlApi/libs/validation";
 
 import { startOfWeek, endOfWeek } from "date-fns";
 
-import UserModel from "models/user";
 import ApartmentModel from "models/apartment";
+
+function validateAssigneesMembership(
+  apartmentMembers: {
+    userId: string;
+  }[],
+  assignees: string[],
+) {
+  if (assignees.length === 0) {
+    throw new Error("Task must have at least one assignee");
+  }
+
+  const outsiderIds: string[] = [];
+  for (const assigneeId of assignees) {
+    const membership = apartmentMembers.find(
+      (member) => member.userId === assigneeId,
+    );
+    if (membership === undefined) {
+      outsiderIds.push(assigneeId);
+    }
+  }
+  if (outsiderIds.length > 0) {
+    throw new Error(
+      `Users with ids ${outsiderIds.join(
+        ", ",
+      )} does not belong to the apartment`,
+    );
+  }
+}
 
 export async function createTaskResolver(
   parent: any,
@@ -29,29 +57,17 @@ export async function createTaskResolver(
       `Start: ${args.start} is invalid. It should be ISO string format.`,
     );
   }
-  if (args.assignees.length === 0) {
-    throw new Error("Task must have at least one assignee");
-  }
 
   const user = await findAndValidateUser(jwtPayload.sub);
-  if (user.apartment === null || user.role !== "ADMIN") {
+  if (user.apartment === null) {
     throw new Error("You must be ADMIN to create new task");
   }
-
-  const assignees = await Promise.all(
-    args.assignees.map(async (assigneeUsername) => {
-      const assignee = await UserModel.findOne({ username: assigneeUsername });
-      if (assignee === null) {
-        throw new Error(`Cannot find user ${assigneeUsername}`);
-      }
-      if (assignee.apartment?.toString() !== user.apartment?.toString()) {
-        throw new Error(
-          `User ${assigneeUsername} does not belong to the same apartment`,
-        );
-      }
-      return assignee;
-    }),
-  );
+  const checkedApartment = await ApartmentModel.findById(user.apartment);
+  if (checkedApartment === null || checkedApartment === undefined) {
+    throw new Error("Cannot find apartment");
+  }
+  validateAdminRole(checkedApartment, user);
+  validateAssigneesMembership(checkedApartment.members, args.assignees);
 
   const newTask = {
     name: args.name,
@@ -61,7 +77,7 @@ export async function createTaskResolver(
     end: isValidDateString(args.end)
       ? endOfWeek(new Date(args.end as string))
       : null,
-    assignees: assignees.map((assignee) => assignee._id),
+    assignees: args.assignees,
   };
   const apartment = await ApartmentModel.findOneAndUpdate(
     { _id: user.apartment },
@@ -80,9 +96,6 @@ export async function createTaskResolver(
     frequency: newTask.frequency,
     start: newTask.start.toISOString(),
     end: newTask.end?.toISOString(),
-    assignees: assignees.map((assignee) => ({
-      id: assignee._id,
-      username: assignee.username,
-    })),
+    assignees: args.assignees,
   };
 }

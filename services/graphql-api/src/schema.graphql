@@ -11,7 +11,17 @@ type Task {
   frequency: Int!
   start: String!
   end: String
-  assignees: [ShortProfile]
+  assignees: [String]
+}
+
+enum MembershipRole {
+  ADMIN
+  NORMAL
+}
+
+type Membership {
+  userId: String!
+  role: MembershipRole!
 }
 
 type Apartment {
@@ -24,7 +34,6 @@ type Profile {
   id: String!
   username: String!
   email: String
-  role: MemberRole!
   apartmentId: String
   apartment: Apartment
 }
@@ -62,6 +71,6 @@ type Mutation {
     frequency: Int!
     start: String!
     end: String
-    assignees: [String]
+    assignees: [String] # ids of assignees
   ): Task
 }

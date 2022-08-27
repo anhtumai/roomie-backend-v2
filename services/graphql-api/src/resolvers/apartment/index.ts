@@ -48,12 +48,18 @@ export async function createApartmentResolver(
 
   const apartment = await ApartmentModel.create({
     name: args.name,
+    members: [
+      {
+        userId: user._id,
+        role: "ADMIN",
+      },
+    ],
   });
   await UserModel.findOneAndUpdate(
     {
       _id: jwtPayload.sub,
     },
-    { apartment: apartment._id, role: "ADMIN" },
+    { apartment: apartment._id },
   );
   return apartment;
 }
