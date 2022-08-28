@@ -1,9 +1,3 @@
-enum MemberRole {
-  ADMIN
-  NORMAL
-  FREE
-}
-
 type Task {
   id: String!
   name: String!
@@ -27,7 +21,8 @@ type Membership {
 type Apartment {
   id: String!
   name: String!
-  #tasks: Task[]
+  tasks: [Task]
+  members: [Membership]
 }
 
 type Profile {

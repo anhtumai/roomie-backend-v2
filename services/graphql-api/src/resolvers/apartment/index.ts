@@ -28,6 +28,8 @@ export async function getApartmentFromProfileResolver(
   return {
     id: apartment._id,
     name: apartment.name,
+    tasks: apartment.tasks,
+    members: apartment.members,
   };
 }
 

@@ -46,7 +46,6 @@ export async function getMyInvitationsResolver(
         await UserModel.findById(invitation.inviter),
         await ApartmentModel.findById(invitation.apartment),
       ]);
-      console.log("Invitation", invitation);
       return {
         id: invitation._id.toString(),
         invitee: {
@@ -60,6 +59,8 @@ export async function getMyInvitationsResolver(
         apartment: {
           id: invitation.apartment.toString(),
           name: apartment?.name ?? "Unknown Apartment",
+          tasks: [],
+          members: [],
         },
       };
     }),
@@ -120,6 +121,8 @@ export async function inviteResolver(
     apartment: {
       id: apartment._id,
       name: apartment.name,
+      tasks: [],
+      members: [],
     },
   };
 }
@@ -144,7 +147,7 @@ export async function rejectInvitationResolver(
 
   const [inviter, apartment] = await Promise.all([
     await UserModel.findById(invitation.inviter),
-    await ApartmentModel.findById(invitation.apartment),
+    await findAndValidateApartment(invitation.apartment),
   ]);
   return {
     id: invitation._id,
@@ -158,7 +161,9 @@ export async function rejectInvitationResolver(
     },
     apartment: {
       id: invitation.apartment,
-      name: apartment?.name ?? "Unknown Apartment",
+      name: apartment.name,
+      tasks: [],
+      members: [],
     },
   };
 }
@@ -211,6 +216,8 @@ export async function acceptInvitationResolver(
     apartment: {
       id: invitation.apartment,
       name: apartment.name,
+      tasks: [],
+      members: [],
     },
   };
 }
