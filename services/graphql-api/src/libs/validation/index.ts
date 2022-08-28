@@ -23,11 +23,15 @@ export async function findAndValidateApartment(
   return apartment;
 }
 
-export function isValidDateString(dateString: any) {
-  if (typeof dateString !== "string") {
-    return false;
-  }
+function isValidDateString(dateString: string) {
   return String(new Date(dateString)) !== "Invalid Date";
+}
+export function validateDateString(dateString: any) {
+  if (!isValidDateString(dateString)) {
+    throw new Error(
+      `${dateString} is not a valid date string. It should be ISO format.`,
+    );
+  }
 }
 
 export function validateAdminRole(

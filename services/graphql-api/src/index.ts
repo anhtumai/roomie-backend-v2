@@ -20,7 +20,11 @@ import {
   rejectInvitationResolver,
   acceptInvitationResolver,
 } from "./resolvers/invitation";
-import { createTaskResolver } from "./resolvers/task";
+import {
+  createTaskResolver,
+  updateTaskPropertiesResolver,
+  updateTaskAssigneesResolver,
+} from "./resolvers/task";
 
 connectMongodb();
 
@@ -39,6 +43,8 @@ const resolvers = {
     acceptInvitation: acceptInvitationResolver,
 
     createTask: createTaskResolver,
+    updateTaskProperties: updateTaskPropertiesResolver,
+    updateTaskAssignees: updateTaskAssigneesResolver,
   },
   Profile: {
     apartment: getApartmentFromProfileResolver,
