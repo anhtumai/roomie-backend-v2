@@ -93,6 +93,7 @@ export async function createTaskResolver(
         ? endOfWeek(new Date(args.end as string))
         : null,
     assignees: args.assignees,
+    createdBy: user._id,
   };
   const apartment = await ApartmentModel.findOneAndUpdate(
     { _id: user.apartment },
