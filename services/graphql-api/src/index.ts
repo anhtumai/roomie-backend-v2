@@ -25,6 +25,7 @@ import {
   updateTaskPropertiesResolver,
   updateTaskAssigneesResolver,
 } from "./resolvers/task";
+import { getUserFromMembershipResolver } from "./resolvers/membership";
 
 connectMongodb();
 
@@ -48,6 +49,9 @@ const resolvers = {
   },
   Profile: {
     apartment: getApartmentFromProfileResolver,
+  },
+  Membership: {
+    user: getUserFromMembershipResolver,
   },
 };
 

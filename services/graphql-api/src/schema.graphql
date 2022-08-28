@@ -16,6 +16,7 @@ enum MembershipRole {
 type Membership {
   userId: String!
   role: MembershipRole!
+  user: ShortProfile!
 }
 
 type Apartment {
@@ -59,6 +60,7 @@ type Mutation {
   invite(username: String!): Invitation
   rejectInvitation(id: ID!): Invitation
   acceptInvitation(id: ID!): Invitation
+  cancelInvitation(id: ID!): Invitation
 
   createTask(
     name: String!
@@ -80,4 +82,5 @@ type Mutation {
     id: String!
     assignees: [String]
   ): Task
+  deleteTask(id: String!): Task
 }
