@@ -221,3 +221,51 @@ export async function acceptInvitationResolver(
     },
   };
 }
+
+export async function cancelInvitationResolver(
+  parent: any,
+  args: {
+    id: string;
+  },
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+
+  const invitation = await InvitationModel.findById(args.id);
+  if (invitation === null || invitation === undefined) {
+    throw new Error(`Invitation with id ${args.id} not found`);
+  }
+  const [user, inviter, invitee, apartment] = await Promise.all([
+    await findAndValidateUser(jwtPayload.sub),
+    await findAndValidateUser(invitation.inviter),
+    await findAndValidateUser(invitation.invitee),
+    await findAndValidateApartment(invitation.apartment),
+  ]);
+  if (user.apartment?.toString() !== invitation.apartment.toString()) {
+    throw new Error("Cannot cancel invitation for another apartment");
+  }
+  validateAdminRole(apartment, user);
+
+  await InvitationModel.deleteOne({
+    _id: invitation._id,
+  });
+
+  return {
+    id: invitation._id,
+    inviter: {
+      id: invitation.inviter,
+      username: inviter.username,
+    },
+    invitee: {
+      id: invitee._id,
+      username: invitee.username,
+    },
+    apartment: {
+      id: invitation.apartment,
+      name: apartment.name,
+      tasks: [],
+      members: [],
+    },
+  };
+}

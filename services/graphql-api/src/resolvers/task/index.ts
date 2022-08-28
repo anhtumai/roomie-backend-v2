@@ -214,3 +214,42 @@ export async function updateTaskAssigneesResolver(
   updatedTask.id = args.id;
   return updatedTask;
 }
+
+export async function deleteTaskResolver(
+  parent: any,
+  args: {
+    id: string;
+  },
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+
+  const user = await findAndValidateUser(jwtPayload.sub);
+  if (user.apartment === null || user.apartment === undefined) {
+    throw new Error("You do not have an apartment");
+  }
+  const apartment = await findAndValidateApartment(user.apartment);
+  validateAdminRole(apartment, user);
+
+  await ApartmentModel.findOneAndUpdate(
+    {
+      _id: user.apartment,
+    },
+    {
+      $pull: {
+        tasks: {
+          _id: args.id,
+        },
+      },
+    },
+  );
+  const deletedTask = apartment.tasks.find(
+    (task) => String(task._id) === args.id,
+  );
+  if (deletedTask === undefined) {
+    throw new Error(`Task with id ${args.id} not found`);
+  }
+  deletedTask.id = args.id;
+  return deletedTask;
+}

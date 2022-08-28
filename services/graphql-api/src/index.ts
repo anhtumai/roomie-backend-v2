@@ -19,11 +19,13 @@ import {
   inviteResolver,
   rejectInvitationResolver,
   acceptInvitationResolver,
+  cancelInvitationResolver,
 } from "./resolvers/invitation";
 import {
   createTaskResolver,
   updateTaskPropertiesResolver,
   updateTaskAssigneesResolver,
+  deleteTaskResolver,
 } from "./resolvers/task";
 import { getUserFromMembershipResolver } from "./resolvers/membership";
 
@@ -42,10 +44,12 @@ const resolvers = {
     invite: inviteResolver,
     rejectInvitation: rejectInvitationResolver,
     acceptInvitation: acceptInvitationResolver,
+    cancelInvitation: cancelInvitationResolver,
 
     createTask: createTaskResolver,
     updateTaskProperties: updateTaskPropertiesResolver,
     updateTaskAssignees: updateTaskAssigneesResolver,
+    deleteTask: deleteTaskResolver,
   },
   Profile: {
     apartment: getApartmentFromProfileResolver,
