@@ -81,10 +81,7 @@ export async function inviteResolver(
     throw new Error(`User ${inviter.username} does not have an apartment`);
   }
 
-  const apartment = await ApartmentModel.findById(inviter.apartment);
-  if (apartment === null || apartment === undefined) {
-    throw new Error("Cannot find apartment");
-  }
+  const apartment = await findAndValidateApartment(inviter.apartment);
   validateAdminRole(apartment, inviter);
 
   const invitee = await UserModel.findOne({ username: args.username });

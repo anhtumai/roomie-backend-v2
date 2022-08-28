@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import UserModel, { UserDocument } from "models/user";
 import ApartmentModel, { ApartmentDocument } from "models/apartment";
 
@@ -11,7 +13,9 @@ export async function findAndValidateUser(sub: string) {
   return user;
 }
 
-export async function findAndValidateApartment(apartmentId: string) {
+export async function findAndValidateApartment(
+  apartmentId: string | mongoose.Schema.Types.ObjectId,
+) {
   const apartment = await ApartmentModel.findById(apartmentId);
   if (apartment === null || apartment === undefined) {
     throw new Error(`Apartment with id ${apartmentId} not found`);

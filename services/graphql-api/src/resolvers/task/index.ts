@@ -1,6 +1,7 @@
 import {
   validateToken,
   findAndValidateUser,
+  findAndValidateApartment,
   isValidDateString,
   validateAdminRole,
 } from "graphqlApi/libs/validation";
@@ -59,13 +60,10 @@ export async function createTaskResolver(
   }
 
   const user = await findAndValidateUser(jwtPayload.sub);
-  if (user.apartment === null) {
-    throw new Error("You must be ADMIN to create new task");
+  if (user.apartment === null || user.apartment === undefined) {
+    throw new Error("You do not have an apartment");
   }
-  const checkedApartment = await ApartmentModel.findById(user.apartment);
-  if (checkedApartment === null || checkedApartment === undefined) {
-    throw new Error("Cannot find apartment");
-  }
+  const checkedApartment = await findAndValidateApartment(user.apartment);
   validateAdminRole(checkedApartment, user);
   validateAssigneesMembership(checkedApartment.members, args.assignees);
 

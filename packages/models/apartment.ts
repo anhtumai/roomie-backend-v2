@@ -66,6 +66,7 @@ const apartmentSchema = new mongoose.Schema<ApartmentDocument>({
   tasks: [taskSchema],
   members: [
     {
+      _id: false,
       userId: {
         type: String,
         ref: "User",
