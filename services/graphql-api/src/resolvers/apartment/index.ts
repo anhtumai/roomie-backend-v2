@@ -1,7 +1,14 @@
-import { validateToken, findAndValidateUser } from "graphqlApi/libs/validation";
+import every from "lodash/every";
+import cloneDeep from "lodash/cloneDeep";
+
+import {
+  validateToken,
+  findAndValidateUser,
+  findAndValidateApartment,
+} from "graphqlApi/libs/validation";
 
 import UserModel from "models/user";
-import ApartmentModel from "models/apartment";
+import ApartmentModel, { MemberDocument, TaskDocument } from "models/apartment";
 
 export async function getApartmentFromProfileResolver(
   parent: {
@@ -64,4 +71,86 @@ export async function createApartmentResolver(
     { apartment: apartment._id },
   );
   return apartment;
+}
+
+export async function updateApartmentResolver(
+  parent: any,
+  args: {
+    name: string;
+  },
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+  const user = await findAndValidateUser(jwtPayload.sub);
+
+  if (user.apartment === undefined || user.apartment === null) {
+    throw new Error("You have no apartment to update");
+  }
+
+  const apartment = await ApartmentModel.findOneAndUpdate(
+    { _id: user.apartment },
+    {
+      $set: {
+        name: args.name,
+      },
+    },
+    { new: true },
+  );
+  return apartment;
+}
+
+function removeMemberFromMembers(
+  members: MemberDocument[],
+  toRemoveMemberId: string,
+) {
+  const updatedMembers = members.filter(
+    (member) => member.userId !== toRemoveMemberId,
+  );
+  if (updatedMembers.length > 0 && every(updatedMembers, { role: "NORMAL" })) {
+    updatedMembers[0].role = "ADMIN";
+  }
+  return updatedMembers;
+}
+function removeMemberFromTasks(
+  tasks: TaskDocument[],
+  toRemoveMemberId: string,
+) {
+  const updatedTasks = cloneDeep(tasks);
+  for (const task of updatedTasks) {
+    const assigneesWithoutToRemoveMember = task.assignees.filter(
+      (assigneeId) => assigneeId !== toRemoveMemberId,
+    );
+    task.assignees = assigneesWithoutToRemoveMember;
+  }
+  return updatedTasks.filter((task) => task.assignees.length > 0);
+}
+export async function leaveApartmentResolver(
+  parent: any,
+  args: any,
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+  const user = await findAndValidateUser(jwtPayload.sub);
+
+  if (user.apartment === undefined || user.apartment === null) {
+    throw new Error("You have no apartment to leave");
+  }
+  const apartment = await findAndValidateApartment(user.apartment);
+  apartment.members = removeMemberFromMembers(apartment.members, user._id);
+  apartment.tasks = removeMemberFromTasks(apartment.tasks, user._id);
+
+  if (apartment.members.length > 0) {
+    await apartment.save();
+  } else {
+    await ApartmentModel.deleteOne({ _id: user.apartment });
+  }
+  const updatedUser = await UserModel.findOneAndUpdate(
+    { _id: user._id },
+    {
+      apartment: null,
+    },
+  );
+  return updatedUser;
 }

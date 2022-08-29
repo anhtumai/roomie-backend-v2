@@ -55,7 +55,9 @@ type Query {
 type Mutation {
   updateMyProfile(username: String!): Profile
 
-  createApartment(name: String): Apartment
+  createApartment(name: String!): Apartment
+  updateApartment(name: String!): Apartment
+  leaveApartment: Profile 
 
   invite(username: String!): Invitation
   rejectInvitation(id: ID!): Invitation

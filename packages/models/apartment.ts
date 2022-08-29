@@ -57,6 +57,11 @@ export interface ApartmentDocument extends mongoose.Document {
   }[];
 }
 
+export interface MemberDocument {
+  userId: string;
+  role: "ADMIN" | "NORMAL";
+}
+
 const apartmentSchema = new mongoose.Schema<ApartmentDocument>({
   name: {
     type: String,

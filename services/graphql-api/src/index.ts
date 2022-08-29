@@ -13,6 +13,8 @@ import {
 import {
   getApartmentFromProfileResolver,
   createApartmentResolver,
+  updateApartmentResolver,
+  leaveApartmentResolver,
 } from "./resolvers/apartment";
 import {
   getMyInvitationsResolver,
@@ -40,6 +42,8 @@ const resolvers = {
   Mutation: {
     updateMyProfile: updateMyProfileResolver,
     createApartment: createApartmentResolver,
+    updateApartment: updateApartmentResolver,
+    leaveApartment: leaveApartmentResolver,
 
     invite: inviteResolver,
     rejectInvitation: rejectInvitationResolver,
