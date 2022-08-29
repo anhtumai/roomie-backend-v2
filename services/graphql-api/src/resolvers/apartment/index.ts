@@ -5,6 +5,7 @@ import {
   validateToken,
   findAndValidateUser,
   findAndValidateApartment,
+  validateAdminRole,
 } from "graphqlApi/libs/validation";
 
 import UserModel from "models/user";
@@ -87,6 +88,8 @@ export async function updateApartmentResolver(
   if (user.apartment === undefined || user.apartment === null) {
     throw new Error("You have no apartment to update");
   }
+  const checkedApartment = await findAndValidateApartment(user.apartment);
+  validateAdminRole(checkedApartment, user);
 
   const apartment = await ApartmentModel.findOneAndUpdate(
     { _id: user.apartment },

@@ -1,10 +1,9 @@
 import { findAndValidateUser } from "graphqlApi/libs/validation";
 
+import { MemberDocument } from "models/apartment";
+
 export async function getUserFromMembershipResolver(
-  parent: {
-    userId: string;
-    role: "ADMIN" | "NORMAL";
-  },
+  parent: MemberDocument,
   args: any,
   context: any,
   info: any,
