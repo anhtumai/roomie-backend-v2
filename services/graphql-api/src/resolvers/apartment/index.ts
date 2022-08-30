@@ -1,5 +1,4 @@
 import every from "lodash/every";
-import cloneDeep from "lodash/cloneDeep";
 
 import {
   validateToken,
@@ -147,7 +146,7 @@ function removeMemberFromTasks(
   tasks: TaskDocument[],
   toRemoveMemberId: string,
 ) {
-  const updatedTasks = cloneDeep(tasks);
+  const updatedTasks: TaskDocument[] = tasks.map((task) => task.toObject());
   for (const task of updatedTasks) {
     const assigneesWithoutToRemoveMember = task.assignees.filter(
       (assigneeId) => assigneeId !== toRemoveMemberId,
@@ -183,5 +182,13 @@ export async function leaveApartmentResolver(
       apartment: null,
     },
   );
-  return updatedUser;
+  if (updatedUser === null) {
+    throw new Error(`Fail to remove apartment from user with id ${user._id}`);
+  }
+  updatedUser.id = user._id;
+  return {
+    id: updatedUser._id,
+    username: updatedUser.username,
+    email: jwtPayload.email,
+  };
 }

@@ -14,6 +14,7 @@ import {
   getApartmentFromProfileResolver,
   createApartmentResolver,
   updateApartmentResolver,
+  assignAdminResolver,
   leaveApartmentResolver,
 } from "./resolvers/apartment";
 import {
@@ -43,6 +44,7 @@ const resolvers = {
     updateMyProfile: updateMyProfileResolver,
     createApartment: createApartmentResolver,
     updateApartment: updateApartmentResolver,
+    assignAdmin: assignAdminResolver,
     leaveApartment: leaveApartmentResolver,
 
     invite: inviteResolver,
