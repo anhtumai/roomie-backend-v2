@@ -103,6 +103,34 @@ export async function updateApartmentResolver(
   return apartment;
 }
 
+export async function assignAdminResolver(
+  parent: any,
+  args: {
+    id: string;
+  },
+  context: any,
+  info: any,
+) {
+  const jwtPayload = await validateToken(context.token);
+  const user = await findAndValidateUser(jwtPayload.sub);
+
+  if (user.apartment === undefined || user.apartment === null) {
+    throw new Error("You have no apartment to update");
+  }
+  const apartment = await findAndValidateApartment(user.apartment);
+  validateAdminRole(apartment, user);
+
+  const willBeAdminMember = apartment.members.find(
+    (member) => member.userId === args.id,
+  );
+  if (willBeAdminMember === undefined) {
+    throw new Error(`User with id ${args.id} is not in your apartment`);
+  }
+  willBeAdminMember.role = "ADMIN";
+  await apartment.save();
+  return apartment;
+}
+
 function removeMemberFromMembers(
   members: MemberDocument[],
   toRemoveMemberId: string,

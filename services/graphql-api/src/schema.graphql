@@ -57,6 +57,7 @@ type Mutation {
 
   createApartment(name: String!): Apartment
   updateApartment(name: String!): Apartment
+  assignAdmin(id: String!): Apartment
   leaveApartment: Profile 
 
   invite(username: String!): Invitation
