@@ -9,11 +9,12 @@ export interface UserDocument extends mongoose.Document {
 const userSchema = new mongoose.Schema<UserDocument>({
   _id: {
     type: String,
+    unique: true,
+    required: true,
   },
   username: {
     type: String,
     minlength: 3,
-    unique: true,
     required: true,
   },
   apartment: {
