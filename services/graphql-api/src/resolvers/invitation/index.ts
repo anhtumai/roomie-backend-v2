@@ -1,6 +1,10 @@
+import auth0 from "auth0";
+
 import UserModel, { UserDocument } from "models/user";
 import ApartmentModel from "models/apartment";
 import InvitationModel from "models/invitation";
+
+import config from "config";
 
 import {
   validateToken,
@@ -8,6 +12,31 @@ import {
   findAndValidateApartment,
   validateAdminRole,
 } from "graphqlApi/libs/validation";
+
+type ShortProfile = {
+  id: string;
+  username: string;
+};
+
+type ResponseInvitation = {
+  id: string;
+  invitee: ShortProfile;
+  inviter: ShortProfile;
+  apartment: {
+    id: string;
+    name: string;
+    tasks: [];
+    members: [];
+  };
+};
+
+console.log("Config", config);
+
+const auth0Management = new auth0.ManagementClient({
+  domain: config.AUTH0_DOMAIN,
+  clientId: config.AUTH0_CLIENT_ID,
+  clientSecret: config.AUTH0_CLIENT_SECRET,
+});
 
 function validateNotHavingApartment(invitee: UserDocument) {
   if (invitee.apartment !== null) {
@@ -40,7 +69,7 @@ export async function getMyInvitationsResolver(
   const invitations = await InvitationModel.find({
     invitee: jwtPayload.sub,
   });
-  const responseInvitations = await Promise.all(
+  const responseInvitations: ResponseInvitation[] = await Promise.all(
     invitations.map(async (invitation) => {
       const [inviter, apartment] = await Promise.all([
         await UserModel.findById(invitation.inviter),
@@ -71,7 +100,7 @@ export async function getMyInvitationsResolver(
 export async function inviteResolver(
   parent: any,
   args: {
-    username: string;
+    email: string;
   },
   context: any,
   info: any,
@@ -85,46 +114,55 @@ export async function inviteResolver(
   const apartment = await findAndValidateApartment(inviter.apartment);
   validateAdminRole(apartment, inviter);
 
-  const invitee = await UserModel.findOne({ username: args.username });
-  if (invitee === null) {
-    throw new Error(`User ${args.username} does not exist`);
-  }
+  const inviteeAccounts = await auth0Management.getUsersByEmail(args.email);
+  const nullableInvitees = await Promise.all(
+    inviteeAccounts
+      .filter((account) => typeof account.user_id === "string")
+      .map((account) => UserModel.findById(account.user_id)),
+  );
 
-  validateNotHavingApartment(invitee);
+  const response: ResponseInvitation[] = [];
 
-  const checkedInvitation = await InvitationModel.findOne({
-    invitee: invitee._id,
-    apartment: inviter.apartment,
-  });
-  if (checkedInvitation !== null) {
-    throw new Error(
-      `An invitation has already been sent to this user ${args.username}`,
-    );
-  }
+  await Promise.all(
+    nullableInvitees.map(async (invitee) => {
+      if (invitee === null || invitee === undefined || invitee.apartment) {
+        return;
+      }
 
-  const newInvitation = await InvitationModel.create({
-    inviter: inviter._id,
-    invitee: invitee._id,
-    apartment: inviter.apartment,
-  });
+      const checkedInvitation = await InvitationModel.findOne({
+        invitee: invitee._id,
+        apartment: inviter.apartment,
+      });
+      if (checkedInvitation !== null) {
+        return;
+      }
 
-  return {
-    id: newInvitation._id,
-    inviter: {
-      id: inviter._id,
-      username: inviter.username,
-    },
-    invitee: {
-      id: invitee._id,
-      username: invitee.username,
-    },
-    apartment: {
-      id: apartment._id,
-      name: apartment.name,
-      tasks: [],
-      members: [],
-    },
-  };
+      const newInvitation = await InvitationModel.create({
+        inviter: inviter._id,
+        invitee: invitee._id,
+        apartment: inviter.apartment,
+      });
+
+      response.push({
+        id: newInvitation._id,
+        inviter: {
+          id: inviter._id,
+          username: inviter.username,
+        },
+        invitee: {
+          id: invitee._id,
+          username: invitee.username,
+        },
+        apartment: {
+          id: apartment._id,
+          name: apartment.name,
+          tasks: [],
+          members: [],
+        },
+      });
+    }),
+  );
+  return response;
 }
 
 export async function rejectInvitationResolver(

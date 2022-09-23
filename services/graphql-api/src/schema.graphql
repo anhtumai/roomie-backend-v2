@@ -60,7 +60,7 @@ type Mutation {
   assignAdmin(id: String!): Apartment
   leaveApartment: Profile 
 
-  invite(username: String!): Invitation
+  invite(email: String!): [Invitation]
   rejectInvitation(id: ID!): Invitation
   acceptInvitation(id: ID!): Invitation
   cancelInvitation(id: ID!): Invitation
