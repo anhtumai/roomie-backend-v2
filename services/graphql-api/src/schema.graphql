@@ -49,7 +49,6 @@ type Invitation {
 type Query {
   getMyProfile: Profile
   getMyInvitations: [Invitation]
-  checkUsernameAvailable(username: String!): Boolean!
 }
 
 type Mutation {

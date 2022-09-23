@@ -8,7 +8,6 @@ import { connectMongodb } from "models/database";
 import {
   getMyProfileResolver,
   updateMyProfileResolver,
-  checkUsernameAvailableResolver,
 } from "./resolvers/profile";
 import {
   getApartmentFromProfileResolver,
@@ -38,7 +37,6 @@ const resolvers = {
   Query: {
     getMyProfile: getMyProfileResolver,
     getMyInvitations: getMyInvitationsResolver,
-    checkUsernameAvailable: checkUsernameAvailableResolver,
   },
   Mutation: {
     updateMyProfile: updateMyProfileResolver,

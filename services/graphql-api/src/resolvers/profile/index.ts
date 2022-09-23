@@ -48,17 +48,3 @@ export async function updateMyProfileResolver(
     username: user.username,
   };
 }
-
-export async function checkUsernameAvailableResolver(
-  parent: any,
-  args: {
-    username: string;
-  },
-  context: any,
-  info: any,
-) {
-  const user = await UserModel.findOne({
-    username: args.username,
-  });
-  return user === null || user === undefined;
-}
