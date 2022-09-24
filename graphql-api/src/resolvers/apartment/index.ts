@@ -5,10 +5,13 @@ import {
   findAndValidateUser,
   findAndValidateApartment,
   validateAdminRole,
-} from "graphqlApi/libs/validation";
+} from "@validation";
 
-import UserModel from "models/user";
-import ApartmentModel, { MemberDocument, TaskDocument } from "models/apartment";
+import UserModel from "@models/user";
+import ApartmentModel, {
+  MemberDocument,
+  TaskDocument,
+} from "@models/apartment";
 
 export async function getApartmentFromProfileResolver(
   parent: {

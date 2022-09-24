@@ -1,6 +1,6 @@
-import UserModel from "models/user";
+import UserModel from "@models/user";
 
-import { validateToken } from "graphqlApi/libs/validation";
+import { validateToken } from "@validation";
 
 export async function getMyProfileResolver(
   parent: any,

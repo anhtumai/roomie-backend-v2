@@ -1,17 +1,15 @@
-import auth0 from "auth0";
+import UserModel, { UserDocument } from "@models/user";
+import ApartmentModel from "@models/apartment";
+import InvitationModel from "@models/invitation";
 
-import UserModel, { UserDocument } from "models/user";
-import ApartmentModel from "models/apartment";
-import InvitationModel from "models/invitation";
-
-import config from "config";
+import config from "@config";
 
 import {
   validateToken,
   findAndValidateUser,
   findAndValidateApartment,
   validateAdminRole,
-} from "graphqlApi/libs/validation";
+} from "@validation";
 
 type ShortProfile = {
   id: string;
@@ -29,14 +27,6 @@ type ResponseInvitation = {
     members: [];
   };
 };
-
-console.log("Config", config);
-
-const auth0Management = new auth0.ManagementClient({
-  domain: config.AUTH0_DOMAIN,
-  clientId: config.AUTH0_CLIENT_ID,
-  clientSecret: config.AUTH0_CLIENT_SECRET,
-});
 
 function validateNotHavingApartment(invitee: UserDocument) {
   if (invitee.apartment !== null) {
@@ -114,55 +104,23 @@ export async function inviteResolver(
   const apartment = await findAndValidateApartment(inviter.apartment);
   validateAdminRole(apartment, inviter);
 
-  const inviteeAccounts = await auth0Management.getUsersByEmail(args.email);
-  const nullableInvitees = await Promise.all(
-    inviteeAccounts
-      .filter((account) => typeof account.user_id === "string")
-      .map((account) => UserModel.findById(account.user_id)),
-  );
-
-  const response: ResponseInvitation[] = [];
-
-  await Promise.all(
-    nullableInvitees.map(async (invitee) => {
-      if (invitee === null || invitee === undefined || invitee.apartment) {
-        return;
-      }
-
-      const checkedInvitation = await InvitationModel.findOne({
-        invitee: invitee._id,
-        apartment: inviter.apartment,
-      });
-      if (checkedInvitation !== null) {
-        return;
-      }
-
-      const newInvitation = await InvitationModel.create({
-        inviter: inviter._id,
-        invitee: invitee._id,
-        apartment: inviter.apartment,
-      });
-
-      response.push({
-        id: newInvitation._id,
-        inviter: {
-          id: inviter._id,
-          username: inviter.username,
-        },
-        invitee: {
-          id: invitee._id,
-          username: invitee.username,
-        },
-        apartment: {
-          id: apartment._id,
-          name: apartment.name,
-          tasks: [],
-          members: [],
-        },
-      });
-    }),
-  );
-  return response;
+  return {
+    id: "",
+    inviter: {
+      id: "",
+      username: "",
+    },
+    invitee: {
+      id: "",
+      username: "",
+    },
+    apartment: {
+      id: "",
+      name: "",
+      tasks: [],
+      members: [],
+    },
+  };
 }
 
 export async function rejectInvitationResolver(

@@ -1,14 +1,14 @@
+import { startOfWeek, endOfWeek, isAfter } from "date-fns";
+
 import {
   validateToken,
   findAndValidateUser,
   findAndValidateApartment,
   validateDateString,
   validateAdminRole,
-} from "graphqlApi/libs/validation";
+} from "@validation";
 
-import { startOfWeek, endOfWeek, isAfter } from "date-fns";
-
-import ApartmentModel from "models/apartment";
+import ApartmentModel from "@models/apartment";
 
 function validateStartEnd({
   start,

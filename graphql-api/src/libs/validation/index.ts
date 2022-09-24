@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-import UserModel, { UserDocument } from "models/user";
-import ApartmentModel, { ApartmentDocument } from "models/apartment";
+import UserModel, { UserDocument } from "@models/user";
+import ApartmentModel, { ApartmentDocument } from "@models/apartment";
 
 export { validateToken } from "./validateToken";
 

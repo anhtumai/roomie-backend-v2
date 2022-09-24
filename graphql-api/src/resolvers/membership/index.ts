@@ -1,6 +1,6 @@
-import { findAndValidateUser } from "graphqlApi/libs/validation";
+import { findAndValidateUser } from "@validation";
 
-import { MemberDocument } from "models/apartment";
+import { MemberDocument } from "@models/apartment";
 
 export async function getUserFromMembershipResolver(
   parent: MemberDocument,

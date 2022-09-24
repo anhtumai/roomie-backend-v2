@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "local": "nodemon -e ts,js --exec ts-node -r tsconfig-paths/register src/index.ts"
+    "local": "nodemon -e ts,js --exec ts-node -r tsconfig-paths/register src/index.ts",
+    "check": "npx tsc --noEmit"
   },
   "dependencies": {
     "apollo-server": "^3.10.1",
