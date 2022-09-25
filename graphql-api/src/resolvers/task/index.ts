@@ -1,7 +1,7 @@
 import { startOfWeek, endOfWeek, isAfter } from "date-fns";
 
 import {
-  validateToken,
+  validateFirebaseIdToken,
   findAndValidateUser,
   findAndValidateApartment,
   validateDateString,
@@ -71,7 +71,7 @@ export async function createTaskResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
 
   validateStartEnd(args);
 
@@ -129,7 +129,7 @@ export async function updateTaskPropertiesResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   validateStartEnd(args);
 
   const user = await findAndValidateUser(jwtPayload.sub);
@@ -180,7 +180,7 @@ export async function updateTaskAssigneesResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const user = await findAndValidateUser(jwtPayload.sub);
   if (user.apartment === null || user.apartment === undefined) {
@@ -223,7 +223,7 @@ export async function deleteTaskResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const user = await findAndValidateUser(jwtPayload.sub);
   if (user.apartment === null || user.apartment === undefined) {

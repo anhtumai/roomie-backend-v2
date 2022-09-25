@@ -1,6 +1,6 @@
 import UserModel from "@models/user";
 
-import { validateToken } from "@validation";
+import { validateFirebaseIdToken } from "@validation";
 
 export async function getMyProfileResolver(
   parent: any,
@@ -8,7 +8,7 @@ export async function getMyProfileResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await UserModel.findById(jwtPayload.sub);
   if (user === null) {
     throw new Error(`User with id ${jwtPayload.sub} not found`);
@@ -29,7 +29,7 @@ export async function updateMyProfileResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await UserModel.findOneAndUpdate(
     {
       _id: jwtPayload.sub,

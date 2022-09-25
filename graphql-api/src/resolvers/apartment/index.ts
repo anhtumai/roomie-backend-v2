@@ -1,7 +1,7 @@
 import every from "lodash/every";
 
 import {
-  validateToken,
+  validateFirebaseIdToken,
   findAndValidateUser,
   findAndValidateApartment,
   validateAdminRole,
@@ -51,7 +51,7 @@ export async function createApartmentResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
   if (user.apartment !== undefined && user.apartment !== null) {
@@ -84,7 +84,7 @@ export async function updateApartmentResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
   if (user.apartment === undefined || user.apartment === null) {
@@ -113,7 +113,7 @@ export async function assignAdminResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
   if (user.apartment === undefined || user.apartment === null) {
@@ -164,7 +164,7 @@ export async function leaveApartmentResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
   if (user.apartment === undefined || user.apartment === null) {

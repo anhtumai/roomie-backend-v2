@@ -5,7 +5,7 @@ import InvitationModel from "@models/invitation";
 import config from "@config";
 
 import {
-  validateToken,
+  validateFirebaseIdToken,
   findAndValidateUser,
   findAndValidateApartment,
   validateAdminRole,
@@ -54,7 +54,7 @@ export async function getMyInvitationsResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const invitee = await findAndValidateUser(jwtPayload.sub);
   const invitations = await InvitationModel.find({
     invitee: jwtPayload.sub,
@@ -95,7 +95,7 @@ export async function inviteResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
   const inviter = await findAndValidateUser(jwtPayload.sub);
   if (inviter.apartment === null || inviter.apartment === undefined) {
     throw new Error(`User ${inviter.username} does not have an apartment`);
@@ -131,7 +131,7 @@ export async function rejectInvitationResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const invitee = await findAndValidateUser(jwtPayload.sub);
 
@@ -172,7 +172,7 @@ export async function acceptInvitationResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const invitee = await findAndValidateUser(jwtPayload.sub);
 
@@ -226,7 +226,7 @@ export async function cancelInvitationResolver(
   context: any,
   info: any,
 ) {
-  const jwtPayload = await validateToken(context.token);
+  const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const invitation = await InvitationModel.findById(args.id);
   if (invitation === null || invitation === undefined) {

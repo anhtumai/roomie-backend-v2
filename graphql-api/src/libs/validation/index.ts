@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import UserModel, { UserDocument } from "@models/user";
 import ApartmentModel, { ApartmentDocument } from "@models/apartment";
 
-export { validateToken } from "./validateToken";
+export { validateFirebaseIdToken } from "./validateToken";
 
 export async function findAndValidateUser(sub: string) {
   const user = await UserModel.findById(sub);

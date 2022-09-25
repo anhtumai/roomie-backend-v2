@@ -9,6 +9,7 @@
   "dependencies": {
     "apollo-server": "^3.10.1",
     "date-fns": "^2.29.2",
+    "firebase-admin": "^11.0.1",
     "graphql": "^16.5.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.1.4",
