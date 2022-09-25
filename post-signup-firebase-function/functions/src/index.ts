@@ -11,18 +11,10 @@ export const createNewUser = functions
     const { uid, email } = user;
     const newUsername = email ? email.split("@")[0] : "new-user";
     try {
-      await UserModel.findOneAndUpdate(
-        {
-          _id: uid,
-        },
-        {
-          $setOnInsert: {
-            _id: uid,
-            username: newUsername,
-          },
-        },
-        { upsert: true, new: true },
-      );
+      await UserModel.create({
+        _id: uid,
+        username: newUsername,
+      });
     } catch (err) {
       console.error("Error when writing new data to database", err);
     }
