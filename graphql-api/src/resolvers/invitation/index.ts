@@ -2,7 +2,7 @@ import UserModel, { UserDocument } from "@models/user";
 import ApartmentModel from "@models/apartment";
 import InvitationModel from "@models/invitation";
 
-import config from "@config";
+import { firebaseAuth } from "../../libs/firebase";
 
 import {
   validateFirebaseIdToken,
@@ -104,19 +104,34 @@ export async function inviteResolver(
   const apartment = await findAndValidateApartment(inviter.apartment);
   validateAdminRole(apartment, inviter);
 
+  const invitedUser = await firebaseAuth.getUserByEmail(args.email);
+
+  const invitee = await findAndValidateUser(invitedUser.uid);
+  if (invitee.apartment !== undefined && invitee.apartment !== null) {
+    throw new Error(
+      `User with email ${args.email} cannot be invited. User with that email may not have been registered or already has an apartment.`,
+    );
+  }
+
+  const newInvitation = await InvitationModel.create({
+    inviter: inviter._id,
+    invitee: invitee._id,
+    apartment: inviter.apartment,
+  });
+
   return {
-    id: "",
+    id: newInvitation._id.toString(),
     inviter: {
-      id: "",
-      username: "",
+      id: inviter._id,
+      username: inviter.username,
     },
     invitee: {
-      id: "",
-      username: "",
+      id: invitee._id,
+      username: invitee.username,
     },
     apartment: {
-      id: "",
-      name: "",
+      id: apartment._id,
+      name: apartment.name,
       tasks: [],
       members: [],
     },
