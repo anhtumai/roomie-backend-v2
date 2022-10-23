@@ -5,7 +5,8 @@ type Task {
   frequency: Int!
   start: String!
   end: String
-  assignees: [String]
+  assignees: [String!]!
+  createdBy: String!
 }
 
 enum MembershipRole {
@@ -22,8 +23,8 @@ type Membership {
 type Apartment {
   id: String!
   name: String!
-  tasks: [Task]
-  members: [Membership]
+  tasks: [Task!]!
+  members: [Membership!]!
 }
 
 type Profile {
@@ -48,7 +49,7 @@ type Invitation {
 
 type Query {
   getMyProfile: Profile
-  getMyInvitations: [Invitation]
+  getMyInvitations: [Invitation!]!
 }
 
 type Mutation {
@@ -70,7 +71,7 @@ type Mutation {
     frequency: Int!
     start: String!
     end: String
-    assignees: [String] # ids of assignees
+    assignees: [String!]! # ids of assignees
   ): Task
   updateTaskProperties(
     id: String!
@@ -82,7 +83,7 @@ type Mutation {
   ): Task
   updateTaskAssignees(
     id: String!
-    assignees: [String]
+    assignees: [String!]!
   ): Task
   deleteTask(id: String!): Task
 }
