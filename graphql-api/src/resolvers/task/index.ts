@@ -1,4 +1,6 @@
-import { startOfWeek, endOfWeek, isAfter } from "date-fns";
+import { Task } from "../../../dto/apartment";
+
+import { startOfISOWeek, endOfISOWeek, isAfter } from "date-fns";
 
 import {
   validateFirebaseIdToken,
@@ -22,8 +24,8 @@ function validateStartEnd({
     validateDateString(end);
   }
   if (typeof end === "string") {
-    const startDate = startOfWeek(new Date(start));
-    const endDate = endOfWeek(new Date(end));
+    const startDate = startOfISOWeek(new Date(start));
+    const endDate = endOfISOWeek(new Date(end));
     if (isAfter(startDate, endDate)) {
       throw new Error(`${start} cannot be after ${end}`);
     }
@@ -70,7 +72,7 @@ export async function createTaskResolver(
   },
   context: any,
   info: any,
-) {
+): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
   validateStartEnd(args);
@@ -87,11 +89,9 @@ export async function createTaskResolver(
     name: args.name,
     description: args.description,
     frequency: args.frequency,
-    start: startOfWeek(new Date(args.start)),
+    start: startOfISOWeek(new Date(args.start)),
     end:
-      typeof args.end === "string"
-        ? endOfWeek(new Date(args.end as string))
-        : null,
+      typeof args.end === "string" ? endOfISOWeek(new Date(args.end!)) : null,
     assignees: args.assignees,
     createdBy: user._id,
   };
@@ -103,16 +103,13 @@ export async function createTaskResolver(
     { new: true },
   );
   return {
+    ...newTask,
     id:
       apartment !== null
         ? apartment.tasks[apartment.tasks.length - 1]._id.toString()
         : "Unknown Task Id",
-    name: newTask.name,
-    description: newTask.description,
-    frequency: newTask.frequency,
     start: newTask.start.toISOString(),
     end: newTask.end?.toISOString(),
-    assignees: args.assignees,
   };
 }
 
@@ -128,7 +125,7 @@ export async function updateTaskPropertiesResolver(
   },
   context: any,
   info: any,
-) {
+): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   validateStartEnd(args);
 
@@ -149,10 +146,10 @@ export async function updateTaskPropertiesResolver(
         "tasks.$.name": args.name,
         "tasks.$.description": args.description,
         "tasks.$.frequency": args.frequency,
-        "tasks.$.start": startOfWeek(new Date(args.start)).toISOString(),
+        "tasks.$.start": startOfISOWeek(new Date(args.start)).toISOString(),
         "tasks.$.end":
           typeof args.end === "string"
-            ? endOfWeek(new Date(args.end)).toISOString()
+            ? endOfISOWeek(new Date(args.end)).toISOString()
             : null,
       },
     },
@@ -167,8 +164,12 @@ export async function updateTaskPropertiesResolver(
   if (updatedTask === undefined) {
     throw new Error("Task not found to update");
   }
-  updatedTask.id = args.id;
-  return updatedTask;
+  return {
+    ...updatedTask,
+    id: args.id,
+    start: updatedTask.start.toISOString(),
+    end: updatedTask.end?.toISOString(),
+  };
 }
 
 export async function updateTaskAssigneesResolver(
@@ -179,7 +180,7 @@ export async function updateTaskAssigneesResolver(
   },
   context: any,
   info: any,
-) {
+): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const user = await findAndValidateUser(jwtPayload.sub);
@@ -212,7 +213,12 @@ export async function updateTaskAssigneesResolver(
     throw new Error("Task not found to update");
   }
   updatedTask.id = args.id;
-  return updatedTask;
+  return {
+    ...updatedTask,
+    id: updatedTask._id,
+    start: updatedTask.start.toISOString(),
+    end: updatedTask.end?.toISOString(),
+  };
 }
 
 export async function deleteTaskResolver(
@@ -222,7 +228,7 @@ export async function deleteTaskResolver(
   },
   context: any,
   info: any,
-) {
+): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const user = await findAndValidateUser(jwtPayload.sub);
@@ -250,6 +256,10 @@ export async function deleteTaskResolver(
   if (deletedTask === undefined) {
     throw new Error(`Task with id ${args.id} not found`);
   }
-  deletedTask.id = args.id;
-  return deletedTask;
+  return {
+    ...deletedTask,
+    id: args.id,
+    start: deletedTask.start.toISOString(),
+    end: deletedTask.end?.toISOString(),
+  };
 }
