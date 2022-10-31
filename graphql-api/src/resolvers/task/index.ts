@@ -22,8 +22,6 @@ function validateStartEnd({
   validateDateString(start);
   if (typeof end === "string") {
     validateDateString(end);
-  }
-  if (typeof end === "string") {
     const startDate = startOfISOWeek(new Date(start));
     const endDate = endOfISOWeek(new Date(end));
     if (isAfter(startDate, endDate)) {
@@ -42,15 +40,12 @@ function validateAssigneesMembership(
     throw new Error("Task must have at least one assignee");
   }
 
-  const outsiderIds: string[] = [];
-  for (const assigneeId of assignees) {
+  const outsiderIds = assignees.filter((assigneeId) => {
     const membership = apartmentMembers.find(
       (member) => member.userId === assigneeId,
     );
-    if (membership === undefined) {
-      outsiderIds.push(assigneeId);
-    }
-  }
+    return membership === undefined;
+  });
   if (outsiderIds.length > 0) {
     throw new Error(
       `Users with ids ${outsiderIds.join(
