@@ -65,10 +65,14 @@ const taskSchema = new mongoose.Schema<TaskDocument>({
 
 export function toTaskOutput(taskDocument: TaskDocument): Task {
   return {
-    ...taskDocument,
     id: taskDocument._id,
+    name: taskDocument.name,
+    description: taskDocument.description,
+    frequency: taskDocument.frequency,
+    assignees: taskDocument.assignees,
     start: taskDocument.start.toISOString(),
     end: taskDocument.end?.toISOString(),
+    createdBy: taskDocument.createdBy,
   };
 }
 
@@ -108,8 +112,9 @@ export function toApartmentOutput(
   apartmentDocument: ApartmentDocument,
 ): Apartment {
   return {
-    ...apartmentDocument,
-    id: apartmentDocument._id,
+    id: String(apartmentDocument._id),
+    name: apartmentDocument.name,
     tasks: apartmentDocument.tasks.map(toTaskOutput),
+    members: apartmentDocument.members,
   };
 }
