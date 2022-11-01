@@ -1,3 +1,5 @@
+import { Apartment, MembershipRole } from "@dto/apartment";
+
 import every from "lodash/every";
 
 import {
@@ -11,20 +13,17 @@ import UserModel from "@models/user";
 import ApartmentModel, {
   MemberDocument,
   TaskDocument,
+  toApartmentOutput,
 } from "@models/apartment";
 
 export async function getApartmentFromProfileResolver(
   parent: {
-    id: string;
-    email: string;
-    username: string;
-    role: string;
     apartmentId?: string;
   },
-  args: any,
-  context: any,
-  info: any,
-) {
+  _args: any,
+  _context: any,
+  _info: any,
+): Promise<Apartment | null> {
   const { apartmentId } = parent;
 
   if (apartmentId === undefined || apartmentId === null) {
@@ -34,23 +33,17 @@ export async function getApartmentFromProfileResolver(
   if (apartment === null) {
     return null;
   }
-
-  return {
-    id: apartment._id,
-    name: apartment.name,
-    tasks: apartment.tasks,
-    members: apartment.members,
-  };
+  return toApartmentOutput(apartment);
 }
 
 export async function createApartmentResolver(
-  parent: any,
+  _parent: any,
   args: {
     name: string;
   },
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Apartment> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
@@ -73,17 +66,17 @@ export async function createApartmentResolver(
     },
     { apartment: apartment._id },
   );
-  return apartment;
+  return toApartmentOutput(apartment);
 }
 
 export async function updateApartmentResolver(
-  parent: any,
+  _parent: any,
   args: {
     name: string;
   },
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Apartment> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
@@ -102,17 +95,20 @@ export async function updateApartmentResolver(
     },
     { new: true },
   );
-  return apartment;
+  if (!apartment) {
+    throw new Error("Unknown error when updating apartment");
+  }
+  return toApartmentOutput(apartment);
 }
 
 export async function assignAdminResolver(
-  parent: any,
+  _parent: any,
   args: {
     id: string;
   },
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Apartment> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
@@ -128,12 +124,16 @@ export async function assignAdminResolver(
   if (willBeAdminMember === undefined) {
     throw new Error(`User with id ${args.id} is not in your apartment`);
   }
-  willBeAdminMember.role = "ADMIN";
+  willBeAdminMember.role = MembershipRole.ADMIN;
   await apartment.save();
-  return apartment;
+  return toApartmentOutput(apartment);
 }
 
-function removeMemberFromMembers(
+/*
+ * Remove member with specific id from `apartment.member`
+ * If that member is admin, assign first member in the list to be admin
+ */
+function removeMemberFromMembersById(
   members: MemberDocument[],
   toRemoveMemberId: string,
 ) {
@@ -141,11 +141,16 @@ function removeMemberFromMembers(
     (member) => member.userId !== toRemoveMemberId,
   );
   if (updatedMembers.length > 0 && every(updatedMembers, { role: "NORMAL" })) {
-    updatedMembers[0].role = "ADMIN";
+    updatedMembers[0].role = MembershipRole.ADMIN;
   }
   return updatedMembers;
 }
-function removeMemberFromTasks(
+
+/*
+ * Remove assignee with specific id from all tasks in `apartment.tasks`
+ * Tasks without any assignees will be removed as well
+ */
+function removeMemberFromTasksById(
   tasks: TaskDocument[],
   toRemoveMemberId: string,
 ) {
@@ -159,11 +164,11 @@ function removeMemberFromTasks(
   return updatedTasks.filter((task) => task.assignees.length > 0);
 }
 export async function leaveApartmentResolver(
-  parent: any,
-  args: any,
+  _parent: any,
+  _args: any,
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<boolean> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await findAndValidateUser(jwtPayload.sub);
 
@@ -171,8 +176,8 @@ export async function leaveApartmentResolver(
     throw new Error("You have no apartment to leave");
   }
   const apartment = await findAndValidateApartment(user.apartment);
-  apartment.members = removeMemberFromMembers(apartment.members, user._id);
-  apartment.tasks = removeMemberFromTasks(apartment.tasks, user._id);
+  apartment.members = removeMemberFromMembersById(apartment.members, user._id);
+  apartment.tasks = removeMemberFromTasksById(apartment.tasks, user._id);
 
   if (apartment.members.length > 0) {
     await apartment.save();
@@ -189,9 +194,5 @@ export async function leaveApartmentResolver(
     throw new Error(`Fail to remove apartment from user with id ${user._id}`);
   }
   updatedUser.id = user._id;
-  return {
-    id: updatedUser._id,
-    username: updatedUser.username,
-    email: jwtPayload.email,
-  };
+  return true;
 }

@@ -48,22 +48,21 @@ type Invitation {
 }
 
 type Query {
-  getMyProfile: Profile
+  getMyProfile: Profile!
   getMyInvitations: [Invitation!]!
 }
 
 type Mutation {
-  updateMyProfile(username: String!): Profile
+  updateMyProfile(username: String!): Profile!
 
-  createApartment(name: String!): Apartment
-  updateApartment(name: String!): Apartment
-  assignAdmin(id: String!): Apartment
-  leaveApartment: Profile 
+  createApartment(name: String!): Apartment!
+  updateApartment(name: String!): Apartment!
+  assignAdmin(id: String!): Apartment!
+  leaveApartment: Boolean!
 
-  invite(email: String!): Boolean
-  rejectInvitation(id: ID!): Invitation
-  acceptInvitation(id: ID!): Invitation
-  cancelInvitation(id: ID!): Invitation
+  invite(email: String!): Boolean!
+  rejectInvitation(id: ID!): Invitation!
+  acceptInvitation(id: ID!): Invitation!
 
   createTask(
     name: String!
@@ -72,7 +71,7 @@ type Mutation {
     start: String!
     end: String
     assignees: [String!]! # ids of assignees
-  ): Task
+  ): Task!
   updateTaskProperties(
     id: String!
     name: String!
@@ -80,10 +79,7 @@ type Mutation {
     frequency: Int!
     start: String!
     end: String
-  ): Task
-  updateTaskAssignees(
-    id: String!
-    assignees: [String!]!
-  ): Task
-  deleteTask(id: String!): Task
+  ): Task!
+  updateTaskAssignees(id: String!, assignees: [String!]!): Task!
+  deleteTask(id: String!): Task!
 }

@@ -21,7 +21,6 @@ import {
   inviteResolver,
   rejectInvitationResolver,
   acceptInvitationResolver,
-  cancelInvitationResolver,
 } from "./resolvers/invitation";
 import {
   createTaskResolver,
@@ -48,7 +47,6 @@ const resolvers = {
     invite: inviteResolver,
     rejectInvitation: rejectInvitationResolver,
     acceptInvitation: acceptInvitationResolver,
-    cancelInvitation: cancelInvitationResolver,
 
     createTask: createTaskResolver,
     updateTaskProperties: updateTaskPropertiesResolver,

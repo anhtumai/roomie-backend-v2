@@ -1,4 +1,4 @@
-import { Task } from "../../../dto/apartment";
+import { Task } from "@dto/apartment";
 
 import { startOfISOWeek, endOfISOWeek, isAfter } from "date-fns";
 
@@ -10,7 +10,7 @@ import {
   validateAdminRole,
 } from "@validation";
 
-import ApartmentModel from "@models/apartment";
+import ApartmentModel, { toTaskOutput } from "@models/apartment";
 
 function validateStartEnd({
   start,
@@ -56,7 +56,7 @@ function validateAssigneesMembership(
 }
 
 export async function createTaskResolver(
-  parent: any,
+  _parent: any,
   args: {
     name: string;
     description: string;
@@ -66,7 +66,7 @@ export async function createTaskResolver(
     assignees: string[];
   },
   context: any,
-  info: any,
+  _info: any,
 ): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
@@ -109,7 +109,7 @@ export async function createTaskResolver(
 }
 
 export async function updateTaskPropertiesResolver(
-  parent: any,
+  _parent: any,
   args: {
     id: string;
     name: string;
@@ -119,7 +119,7 @@ export async function updateTaskPropertiesResolver(
     end?: string | null;
   },
   context: any,
-  info: any,
+  _info: any,
 ): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   validateStartEnd(args);
@@ -159,22 +159,17 @@ export async function updateTaskPropertiesResolver(
   if (updatedTask === undefined) {
     throw new Error("Task not found to update");
   }
-  return {
-    ...updatedTask,
-    id: args.id,
-    start: updatedTask.start.toISOString(),
-    end: updatedTask.end?.toISOString(),
-  };
+  return toTaskOutput(updatedTask);
 }
 
 export async function updateTaskAssigneesResolver(
-  parent: any,
+  _parent: any,
   args: {
     id: string;
     assignees: string[];
   },
   context: any,
-  info: any,
+  _info: any,
 ): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
@@ -207,22 +202,16 @@ export async function updateTaskAssigneesResolver(
   if (updatedTask === undefined) {
     throw new Error("Task not found to update");
   }
-  updatedTask.id = args.id;
-  return {
-    ...updatedTask,
-    id: updatedTask._id,
-    start: updatedTask.start.toISOString(),
-    end: updatedTask.end?.toISOString(),
-  };
+  return toTaskOutput(updatedTask);
 }
 
 export async function deleteTaskResolver(
-  parent: any,
+  _parent: any,
   args: {
     id: string;
   },
   context: any,
-  info: any,
+  _info: any,
 ): Promise<Task> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
@@ -251,10 +240,5 @@ export async function deleteTaskResolver(
   if (deletedTask === undefined) {
     throw new Error(`Task with id ${args.id} not found`);
   }
-  return {
-    ...deletedTask,
-    id: args.id,
-    start: deletedTask.start.toISOString(),
-    end: deletedTask.end?.toISOString(),
-  };
+  return toTaskOutput(deletedTask);
 }

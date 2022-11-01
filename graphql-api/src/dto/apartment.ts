@@ -1,5 +1,3 @@
-import { ShortProfile } from "./shortProfile";
-
 export type Task = {
   id: string;
   name: string;
@@ -19,7 +17,6 @@ export enum MembershipRole {
 export type Membership = {
   userId: string;
   role: MembershipRole;
-  user: ShortProfile;
 };
 
 export type Apartment = {

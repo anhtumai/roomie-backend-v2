@@ -1,13 +1,15 @@
+import { Profile } from "@dto/profile";
+
 import UserModel from "@models/user";
 
 import { validateFirebaseIdToken } from "@validation";
 
 export async function getMyProfileResolver(
-  parent: any,
-  args: any,
+  _parent: any,
+  _args: any,
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Profile> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await UserModel.findById(jwtPayload.sub);
   if (user === null) {
@@ -22,13 +24,13 @@ export async function getMyProfileResolver(
 }
 
 export async function updateMyProfileResolver(
-  parent: any,
+  _parent: any,
   args: {
     username: string;
   },
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Profile> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const user = await UserModel.findOneAndUpdate(
     {

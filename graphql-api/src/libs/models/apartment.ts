@@ -1,3 +1,4 @@
+import { Task, Apartment, MembershipRole } from "@dto/apartment";
 import mongoose from "mongoose";
 
 export interface TaskDocument extends mongoose.Document {
@@ -8,6 +9,20 @@ export interface TaskDocument extends mongoose.Document {
   end?: Date;
   assignees: string[];
   createdBy: string;
+}
+
+export interface ApartmentDocument extends mongoose.Document {
+  name: string;
+  tasks: TaskDocument[];
+  members: {
+    userId: string;
+    role: MembershipRole;
+  }[];
+}
+
+export interface MemberDocument {
+  userId: string;
+  role: MembershipRole;
 }
 
 const taskSchema = new mongoose.Schema<TaskDocument>({
@@ -48,18 +63,13 @@ const taskSchema = new mongoose.Schema<TaskDocument>({
   },
 });
 
-export interface ApartmentDocument extends mongoose.Document {
-  name: string;
-  tasks: TaskDocument[];
-  members: {
-    userId: string;
-    role: "ADMIN" | "NORMAL";
-  }[];
-}
-
-export interface MemberDocument {
-  userId: string;
-  role: "ADMIN" | "NORMAL";
+export function toTaskOutput(taskDocument: TaskDocument): Task {
+  return {
+    ...taskDocument,
+    id: taskDocument._id,
+    start: taskDocument.start.toISOString(),
+    end: taskDocument.end?.toISOString(),
+  };
 }
 
 const apartmentSchema = new mongoose.Schema<ApartmentDocument>({
@@ -93,3 +103,13 @@ const ApartmentModel = mongoose.model<ApartmentDocument>(
 );
 
 export default ApartmentModel;
+
+export function toApartmentOutput(
+  apartmentDocument: ApartmentDocument,
+): Apartment {
+  return {
+    ...apartmentDocument,
+    id: apartmentDocument._id,
+    tasks: apartmentDocument.tasks.map(toTaskOutput),
+  };
+}

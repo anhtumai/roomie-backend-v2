@@ -11,10 +11,9 @@
     "baseUrl": ".",
     "paths": {
       "@config": ["./src/libs/config"],
-      "@database": ["./src/libs/database"],
       "@models*": ["./src/libs/models*"],
-      "@utils": ["./src/libs/utils"],
-      "@validation": ["./src/libs/validation"]
+      "@validation": ["./src/libs/validation"],
+      "@dto*": ["./src/dto*"]
     }
   }
 }

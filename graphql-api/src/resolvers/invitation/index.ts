@@ -1,3 +1,5 @@
+import { Invitation } from "@dto/invitation";
+
 import UserModel, { UserDocument } from "@models/user";
 import ApartmentModel from "@models/apartment";
 import InvitationModel from "@models/invitation";
@@ -49,11 +51,11 @@ async function findAndValidateInvitation(
 }
 
 export async function getMyInvitationsResolver(
-  parent: any,
-  args: any,
+  _parent: any,
+  _args: any,
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Invitation[]> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const invitee = await findAndValidateUser(jwtPayload.sub);
   const invitations = await InvitationModel.find({
@@ -88,13 +90,13 @@ export async function getMyInvitationsResolver(
 }
 
 export async function inviteResolver(
-  parent: any,
+  _parent: any,
   args: {
     email: string;
   },
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<boolean> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
   const inviter = await findAndValidateUser(jwtPayload.sub);
   if (inviter.apartment === null || inviter.apartment === undefined) {
@@ -124,13 +126,13 @@ export async function inviteResolver(
 }
 
 export async function rejectInvitationResolver(
-  parent: any,
+  _parent: any,
   args: {
     id: string;
   },
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Invitation> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const invitee = await findAndValidateUser(jwtPayload.sub);
@@ -156,7 +158,7 @@ export async function rejectInvitationResolver(
       username: invitee.username,
     },
     apartment: {
-      id: invitation.apartment,
+      id: String(invitation.apartment),
       name: apartment.name,
       tasks: [],
       members: [],
@@ -165,13 +167,13 @@ export async function rejectInvitationResolver(
 }
 
 export async function acceptInvitationResolver(
-  parent: any,
+  _parent: any,
   args: {
     id: string;
   },
   context: any,
-  info: any,
-) {
+  _info: any,
+): Promise<Invitation> {
   const jwtPayload = await validateFirebaseIdToken(context.token);
 
   const invitee = await findAndValidateUser(jwtPayload.sub);
@@ -210,55 +212,7 @@ export async function acceptInvitationResolver(
       username: invitee.username,
     },
     apartment: {
-      id: invitation.apartment,
-      name: apartment.name,
-      tasks: [],
-      members: [],
-    },
-  };
-}
-
-export async function cancelInvitationResolver(
-  parent: any,
-  args: {
-    id: string;
-  },
-  context: any,
-  info: any,
-) {
-  const jwtPayload = await validateFirebaseIdToken(context.token);
-
-  const invitation = await InvitationModel.findById(args.id);
-  if (invitation === null || invitation === undefined) {
-    throw new Error(`Invitation with id ${args.id} not found`);
-  }
-  const [user, inviter, invitee, apartment] = await Promise.all([
-    await findAndValidateUser(jwtPayload.sub),
-    await findAndValidateUser(invitation.inviter),
-    await findAndValidateUser(invitation.invitee),
-    await findAndValidateApartment(invitation.apartment),
-  ]);
-  if (user.apartment?.toString() !== invitation.apartment.toString()) {
-    throw new Error("Cannot cancel invitation for another apartment");
-  }
-  validateAdminRole(apartment, user);
-
-  await InvitationModel.deleteOne({
-    _id: invitation._id,
-  });
-
-  return {
-    id: invitation._id,
-    inviter: {
-      id: invitation.inviter,
-      username: inviter.username,
-    },
-    invitee: {
-      id: invitee._id,
-      username: invitee.username,
-    },
-    apartment: {
-      id: invitation.apartment,
+      id: String(invitation.apartment),
       name: apartment.name,
       tasks: [],
       members: [],
